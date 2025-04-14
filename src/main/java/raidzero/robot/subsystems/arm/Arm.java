@@ -1,13 +1,24 @@
 package raidzero.robot.subsystems.arm;
 
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import raidzero.lib.LazyTalon;
 import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
+import raidzero.robot.Constants.Arm.Wrist;
 
 public class Arm extends SubsystemBase {
     private LazyTalon proximalJoint, distalJoint;
+    private SparkMax wrist;
 
     private static Arm system;
 
@@ -40,8 +51,17 @@ public class Arm extends SubsystemBase {
             DistalJoint.GRAVITY_TYPE,
             DistalJoint.CRUISE_VELOCITY, DistalJoint.ACCELERATION
         ).build();
+
+        wrist = new SparkMax(Wrist.MOTOR_ID, MotorType.kBrushless);
+        wrist.configure(wristConfiguration(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
+    /**
+     * Moves the arm to the given setpoint with the given wrist angle
+     * 
+     * @param setpoint first 2 numbers are x and y position, next number is the wrist angle
+     * @return a {@link Command}
+     */
     public Command moveTo(double[] setpoint) {
         return run(() -> {
             double r = Math.sqrt(setpoint[0] * setpoint[0] + setpoint[1] * setpoint[1]); // Distance from origin to target
@@ -63,6 +83,7 @@ public class Arm extends SubsystemBase {
             double distalSetpoint = theta2 / 2.0 * Math.PI;
 
             moveWithRotations(proximalSetpoint, distalSetpoint);
+            wrist.getClosedLoopController().setReference(setpoint[2], ControlType.kPosition);
         });
     }
 
@@ -75,7 +96,16 @@ public class Arm extends SubsystemBase {
         distalJoint.moveTo(distalSetpoint);
     }
 
-    public Arm system() {
+    private SparkBaseConfig wristConfiguration() {
+        SparkMaxConfig configuration = new SparkMaxConfig();
+
+        configuration.closedLoop.pid(Wrist.P, Wrist.I, Wrist.D);
+        configuration.smartCurrentLimit(Wrist.CURRENT_LIMIT);
+
+        return configuration;
+    }
+
+    public static Arm system() {
         if (system == null) {
             system = new Arm();
         }

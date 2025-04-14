@@ -4,21 +4,26 @@
 
 package raidzero.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import raidzero.robot.subsystems.drivetrain.Limelight;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
+import raidzero.robot.subsystems.arm.Arm;
+import raidzero.robot.Constants.Arm.Positions;
+import raidzero.robot.Constants.Bindings;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -35,10 +40,9 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final Swerve swerve = Swerve.system();
-
     public final Limelight limes = Limelight.system();
 
-    // public final AlgaeJoint algaeIntake = AlgaeJoint.system();
+    public final Arm arm = Arm.system();
 
     public final SendableChooser<Command> autoChooser;
 
@@ -67,6 +71,19 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
+
+        arm.setDefaultCommand(arm.home());
+
+        Bindings.L1.whileTrue(arm.moveTo(Positions.L1));
+        Bindings.L2.whileTrue(arm.moveTo(Positions.L2));
+        Bindings.L3.whileTrue(arm.moveTo(Positions.L3));
+        Bindings.L4.whileTrue(arm.moveTo(Positions.L4));
+
+        Bindings.STATION.whileTrue(arm.moveTo(Positions.STATION));
+        Bindings.GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE));
+
+        Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR));
+        //TODO: Split the wrist up please
 
         joystick.povRight().whileTrue(
             swerve.applyRequest(
