@@ -18,10 +18,13 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.nio.file.OpenOption;
+
 import raidzero.robot.subsystems.drivetrain.Limelight;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 import raidzero.robot.subsystems.arm.Arm;
+import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.Constants.Arm.Positions;
 import raidzero.robot.Constants.Bindings;
 
@@ -43,6 +46,7 @@ public class RobotContainer {
     public final Limelight limes = Limelight.system();
 
     public final Arm arm = Arm.system();
+    public final Intake intake = Intake.system();
 
     public final SendableChooser<Command> autoChooser;
 
@@ -73,6 +77,7 @@ public class RobotContainer {
         );
 
         arm.setDefaultCommand(arm.home());
+        intake.setDefaultCommand(intake.stop());
 
         Bindings.L1.whileTrue(arm.moveTo(Positions.L1));
         Bindings.L2.whileTrue(arm.moveTo(Positions.L2));
@@ -83,7 +88,16 @@ public class RobotContainer {
         Bindings.GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE));
 
         Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR));
-        //TODO: Split the wrist up please
+        Bindings.BARGE.whileTrue(arm.moveTo(Positions.BARGE));
+
+        Bindings.CORAL_INTAKE.whileTrue(intake.intake());
+        Bindings.CORAL_EXTAKE.whileTrue(intake.extake());
+
+        Bindings.ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
+        Bindings.ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
+
+        Bindings.operator.axisGreaterThan(Bindings.L3_ALGAE, 0.5).whileTrue(arm.moveTo(Positions.L3_ALGAE));
+        Bindings.operator.axisGreaterThan(Bindings.L2_ALGAE, 0.5).whileTrue(arm.moveTo(Positions.L2_ALGAE));
 
         joystick.povRight().whileTrue(
             swerve.applyRequest(

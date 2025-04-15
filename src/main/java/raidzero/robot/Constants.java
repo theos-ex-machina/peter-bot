@@ -2,9 +2,8 @@ package raidzero.robot;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PS4Controller.Axis;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -70,6 +69,30 @@ public class Constants {
             public static final double P = 1.0;
             public static final double I = 0.0;
             public static final double D = 0.0;
+        }
+
+        public static class Intake {
+            public static final int LEADER_ID = 14;
+            public static final int FOLLOWER_ID = 15;
+
+            public static final int BOTTOM_LASERCAN_ID = 0;
+            public static final int BOTTOM_LASER_THRESHOLD_MM = 50;
+            
+            public static final int TOP_LASERCAN_ID = 1;
+            public static final int TOP_LASER_THRESHOLD_MM = 50;
+
+            public static final double INTAKE_SPEED = 1.0;
+            public static final double EXTAKE_SPEED = 1.0;
+
+            public static final double ALGAE_EJECT_SPEED = 1.0;
+            public static final double ALGAE_HOLD_SPEED = 0.4;
+
+            public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.Minion_JST;
+            public static final InvertedValue INVERTED_VALUE = InvertedValue.CounterClockwise_Positive;
+
+            public static final int STATOR_CURRENT_LIMIT = 40;
+            public static final int SUPPLY_CURRENT_LIMIT = 50;
+            public static final double SUPPLY_CURRENT_LOWER_TIME = 0.0;
         }
 
         public static class Positions {
