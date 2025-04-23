@@ -11,6 +11,8 @@ public class Constants {
     public static class Arm {
         public static class ProximalJoint {
             public static final int MOTOR_ID = 10;
+            public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.NEO_JST;
+
             public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
             public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -38,6 +40,8 @@ public class Constants {
 
         public static class DistalJoint {
             public static final int MOTOR_ID = 11;
+            public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.NEO_JST;
+
             public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
             public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
@@ -62,18 +66,34 @@ public class Constants {
 
         public static class Wrist {
             public static final int MOTOR_ID = 13;
+            public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.NEO550_JST;
             public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
 
-            public static final int CURRENT_LIMIT = 40;
+            public static final InvertedValue INVERTED_VALUE = InvertedValue.CounterClockwise_Positive;
+
+            public static final int STATOR_CURRENT_LIMIT = 40;
+            public static final int SUPPLY_CURRENT_LIMIT = 50;
 
             public static final double P = 1.0;
             public static final double I = 0.0;
             public static final double D = 0.0;
+
+            public static final double S = 0.0;
+            public static final double G = 0.0;
+            public static final double V = 0.0;
+            public static final double A = 0.0;
+            public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
+
+            public static final double CRUISE_VELOCITY = 1.0;
+            public static final double ACCELERATION = 1.0;
         }
 
         public static class Intake {
             public static final int LEADER_ID = 14;
             public static final int FOLLOWER_ID = 15;
+            public static final boolean FOLLOWER_INVERTED = false;
+
+            public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
 
             public static final int BOTTOM_LASERCAN_ID = 0;
             public static final int BOTTOM_LASER_THRESHOLD_MM = 50;
@@ -136,7 +156,7 @@ public class Constants {
         public static Trigger ALGAE_EXTAKE = operator.button(5);
 
         // Axis buttons next to algae shit
-        public static int L3_ALGAE = 1;
-        public static int L2_ALGAE = 2;
+        public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
+        public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
     }
 }

@@ -1,19 +1,20 @@
 package raidzero.robot.subsystems.arm;
 
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.LazyCan;
+import raidzero.lib.LazyFXS;
+
 import static raidzero.robot.Constants.Arm.Intake.*;
 
 public class Intake extends SubsystemBase {
-    private TalonFXS roller, follower;
+    private LazyFXS roller;
     private LazyCan bottomLaser, topLaser;
 
     private static Intake system;
@@ -22,12 +23,11 @@ public class Intake extends SubsystemBase {
      * Constructs a {@link CoralIntake} subsystem instance
      */
     private Intake() {
-        roller = new TalonFXS(LEADER_ID);
-        roller.getConfigurator().apply(rollerConfiguration());
-
-        follower = new TalonFXS(FOLLOWER_ID);
-        follower.getConfigurator().apply(followerConfiguration());
-        follower.setControl(new Follower(LEADER_ID, false));
+        roller = new LazyFXS(
+            LEADER_ID, MOTOR_ARRANGEMENT,
+            SENSOR_TO_MECHANISM_RATIO, INVERTED_VALUE,
+            STATOR_CURRENT_LIMIT, SUPPLY_CURRENT_LIMIT
+        ).withFollower(FOLLOWER_ID, FOLLOWER_INVERTED).build();
 
         bottomLaser = new LazyCan(BOTTOM_LASERCAN_ID).withRangingMode(RangingMode.SHORT)
             .withRegionOfInterest(14, 8, 16, 16).withTimingBudget(TimingBudget.TIMING_BUDGET_20MS)
@@ -43,8 +43,17 @@ public class Intake extends SubsystemBase {
      *
      * @return A {@link Command} that intakes a coral
      */
-    public Command intake() {
+    public Command intakeCoral() {
         return run(() -> roller.set(INTAKE_SPEED)).until(() -> bottomLaser.withinThreshold());
+    }
+
+    /**
+     * Extakes a coral
+     *
+     * @return A {@link Command} that extakes a coral
+     */
+    public Command extakeCoral() {
+        return run(() -> roller.set(EXTAKE_SPEED));
     }
 
     /**
@@ -80,16 +89,40 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that stops the intake
      */
     public Command stop() {
-        return runOnce(() -> roller.stopMotor());
+        return runOnce(() -> roller.stop());
     }
 
     /**
-     * Extakes a coral
-     *
-     * @return A {@link Command} that extakes a coral
+     * Holds algae if in the intake, else not
+     * 
+     * @return A {@link Command}
      */
-    public Command extake() {
-        return run(() -> roller.set(EXTAKE_SPEED));
+    public Command idleBehavior() {
+        return run(() -> {
+            if (topLaser.withinThreshold() && !bottomLaser.withinThreshold()) {
+                roller.set(ALGAE_HOLD_SPEED);
+            } else {
+                roller.stop();
+            }
+        });
+    }
+
+    /**
+     * Trigger to detect if algae is in the intake
+     * 
+     * @return a {@link Trigger}
+     */
+    public Trigger hasAlgae() {
+        return new Trigger(() -> topLaser.withinThreshold() && !bottomLaser.withinThreshold());
+    }
+
+    /**
+     * Trigger to detect if coral is in the intake
+     * 
+     * @return a {@link Trigger}
+     */
+    public Trigger hasCoral() {
+        return new Trigger(() -> topLaser.withinThreshold() && bottomLaser.withinThreshold());
     }
 
     /**
@@ -100,46 +133,6 @@ public class Intake extends SubsystemBase {
      */
     public Command run(double speed) {
         return run(() -> roller.set(speed));
-    }
-
-    /**
-     * Gets the {@link TalonFXSConfiguration} for the roller motor
-     *
-     * @return The {@link TalonFXSConfiguration} for the roller motor
-     */
-    private TalonFXSConfiguration rollerConfiguration() {
-        TalonFXSConfiguration configuration = new TalonFXSConfiguration();
-
-        configuration.Commutation.MotorArrangement = MOTOR_ARRANGEMENT;
-        configuration.MotorOutput.Inverted = INVERTED_VALUE;
-
-        configuration.CurrentLimits.StatorCurrentLimit = STATOR_CURRENT_LIMIT;
-        configuration.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT;
-        configuration.CurrentLimits.SupplyCurrentLowerTime = SUPPLY_CURRENT_LOWER_TIME;
-
-        configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        return configuration;
-    }
-
-    /**
-     * Gets the {@link TalonFXSConfiguration} for the follower motor
-     *
-     * @return The {@link TalonFXSConfiguration} for the follower motor
-     */
-    private TalonFXSConfiguration followerConfiguration() {
-        TalonFXSConfiguration configuration = new TalonFXSConfiguration();
-
-        configuration.Commutation.MotorArrangement = MOTOR_ARRANGEMENT;
-        configuration.MotorOutput.Inverted = INVERTED_VALUE;
-
-        configuration.CurrentLimits.StatorCurrentLimit = STATOR_CURRENT_LIMIT;
-        configuration.CurrentLimits.SupplyCurrentLimit = SUPPLY_CURRENT_LIMIT;
-        configuration.CurrentLimits.SupplyCurrentLowerTime = SUPPLY_CURRENT_LOWER_TIME;
-
-        configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        return configuration;
     }
 
     /**

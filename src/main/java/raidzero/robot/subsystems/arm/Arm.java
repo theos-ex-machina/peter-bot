@@ -10,20 +10,21 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import raidzero.lib.LazyTalon;
+import raidzero.lib.LazyFXS;
 import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
 import raidzero.robot.Constants.Arm.Wrist;
 
 public class Arm extends SubsystemBase {
-    private LazyTalon proximalJoint, distalJoint;
-    private SparkMax wrist;
+    private LazyFXS proximalJoint, distalJoint;
+    private LazyFXS wrist;
 
     private static Arm system;
 
     private Arm() {
-        proximalJoint = new LazyTalon(
+        proximalJoint = new LazyFXS(
             ProximalJoint.MOTOR_ID,
+            ProximalJoint.MOTOR_ARRANGEMENT,
             ProximalJoint.SENSOR_TO_MECHANISM_RATIO,
             ProximalJoint.INVERTED,
             ProximalJoint.STATOR_CURRENT_LIMIT,
@@ -38,8 +39,9 @@ public class Arm extends SubsystemBase {
             ProximalJoint.CRUISE_VELOCITY, ProximalJoint.ACCELERATION
         ).build();
 
-        distalJoint = new LazyTalon(
+        distalJoint = new LazyFXS(
             DistalJoint.MOTOR_ID,
+            DistalJoint.MOTOR_ARRANGEMENT,
             DistalJoint.SENSOR_TO_MECHANISM_RATIO,
             DistalJoint.INVERTED,
             DistalJoint.STATOR_CURRENT_LIMIT,
@@ -51,8 +53,15 @@ public class Arm extends SubsystemBase {
             DistalJoint.CRUISE_VELOCITY, DistalJoint.ACCELERATION
         ).build();
 
-        wrist = new SparkMax(Wrist.MOTOR_ID, MotorType.kBrushless);
-        wrist.configure(wristConfiguration(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        wrist = new LazyFXS(
+            Wrist.MOTOR_ID, Wrist.MOTOR_ARRANGEMENT, Wrist.SENSOR_TO_MECHANISM_RATIO, Wrist.INVERTED_VALUE, Wrist.STATOR_CURRENT_LIMIT,
+            Wrist.SUPPLY_CURRENT_LIMIT
+        ).withMotionMagicConfiguration(
+            Wrist.P, Wrist.I, Wrist.D,
+            Wrist.S, Wrist.G, Wrist.V, Wrist.A,
+            Wrist.GRAVITY_TYPE,
+            Wrist.CRUISE_VELOCITY, Wrist.ACCELERATION
+        ).build();
     }
 
     /**
@@ -82,26 +91,25 @@ public class Arm extends SubsystemBase {
             double distalSetpoint = theta2 / 2.0 * Math.PI;
 
             moveWithRotations(proximalSetpoint, distalSetpoint);
-            wrist.getClosedLoopController().setReference(setpoint[2], ControlType.kPosition);
+            wrist.moveTo(setpoint[2]);
         });
     }
 
     public Command home() {
-        return run(() -> moveWithRotations(0.25, 0.75));
+        return run(() -> {
+            moveWithRotations(0.25, 0.75);
+
+            if (Intake.system().hasCoral().getAsBoolean()) {
+                wrist.moveTo(0);
+            } else {
+                wrist.moveTo(0.25);
+            }
+        });
     }
 
     private void moveWithRotations(double proximalSetpoint, double distalSetpoint) {
         proximalJoint.moveTo(proximalSetpoint);
         distalJoint.moveTo(distalSetpoint);
-    }
-
-    private SparkBaseConfig wristConfiguration() {
-        SparkMaxConfig configuration = new SparkMaxConfig();
-
-        configuration.closedLoop.pid(Wrist.P, Wrist.I, Wrist.D);
-        configuration.smartCurrentLimit(Wrist.CURRENT_LIMIT);
-
-        return configuration;
     }
 
     public static Arm system() {

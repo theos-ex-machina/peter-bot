@@ -79,6 +79,12 @@ public class RobotContainer {
         arm.setDefaultCommand(arm.home());
         intake.setDefaultCommand(intake.stop());
 
+        // auto home when let go or obtain algae or coral
+        intake.hasCoral().onTrue(arm.home());
+        intake.hasAlgae().onTrue(arm.home());
+        intake.hasCoral().onFalse(arm.home());
+        intake.hasAlgae().onFalse(arm.home());
+
         Bindings.L1.whileTrue(arm.moveTo(Positions.L1));
         Bindings.L2.whileTrue(arm.moveTo(Positions.L2));
         Bindings.L3.whileTrue(arm.moveTo(Positions.L3));
@@ -90,20 +96,14 @@ public class RobotContainer {
         Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR));
         Bindings.BARGE.whileTrue(arm.moveTo(Positions.BARGE));
 
-        Bindings.CORAL_INTAKE.whileTrue(intake.intake());
-        Bindings.CORAL_EXTAKE.whileTrue(intake.extake());
+        Bindings.CORAL_INTAKE.whileTrue(intake.intakeCoral());
+        Bindings.CORAL_EXTAKE.whileTrue(intake.extakeCoral());
 
         Bindings.ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
         Bindings.ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
 
-        Bindings.operator.axisGreaterThan(Bindings.L3_ALGAE, 0.5).whileTrue(arm.moveTo(Positions.L3_ALGAE));
-        Bindings.operator.axisGreaterThan(Bindings.L2_ALGAE, 0.5).whileTrue(arm.moveTo(Positions.L2_ALGAE));
-
-        joystick.povRight().whileTrue(
-            swerve.applyRequest(
-                () -> new SwerveRequest.SwerveDriveBrake()
-            )
-        );
+        Bindings.L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE));
+        Bindings.L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE));
 
         swerve.registerTelemetry(logger::telemeterize);
     }
