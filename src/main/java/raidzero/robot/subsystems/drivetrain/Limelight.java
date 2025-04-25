@@ -127,7 +127,7 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeFL = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-fl");
+        limeFL = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-fl");
 
         if (limeFL != null && limeFL.pose != null) {
             ignoreFlLime = !poseInField(limeFL.pose) ||
@@ -171,7 +171,7 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeFR = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-fr");
+        limeFR = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-fr");
 
         if (limeFR != null && limeFR.pose != null) {
             ignoreFrLime = !poseInField(limeFR.pose) ||
@@ -215,7 +215,7 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeBL = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-bl");
+        limeBL = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-bl");
 
         if (limeBL != null && limeBL.pose != null) {
             ignoreBlLime = !poseInField(limeBL.pose) ||
@@ -259,7 +259,7 @@ public class Limelight extends SubsystemBase {
             0,
             0
         );
-        limeBR = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-br");
+        limeBR = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-br");
 
         if (limeBR != null && limeBR.pose != null) {
             ignoreBrLime = !poseInField(limeBR.pose) ||
