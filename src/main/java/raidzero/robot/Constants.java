@@ -116,18 +116,18 @@ public class Constants {
         }
 
         public static class Positions {
-            public static final double[] L4 = { 0.0, 0.0, 0.0 };
-            public static final double[] L3 = { 0.0, 0.0, 0.0 };
-            public static final double[] L2 = { 0.0, 0.0, 0.0 };
-            public static final double[] L1 = { 0.0, 0.0, 0.0 };
+            public static final double[] L4 = { -0.25, 1.84, 0.875 };
+            public static final double[] L3 = { -0.25, 1.22, 0.875 };
+            public static final double[] L2 = { -0.25, 0.82, 0.875 };
+            public static final double[] L1 = { -0.30, 0.47, 0.875 };
 
-            public static final double[] STATION = { 0.0, 0.0, 0.0 };
-            public static final double[] GROUND_INTAKE = { 0.0, 0.0, 0.0 };
+            public static final double[] STATION = { -0.35, 0.95, 0.1 };
+            public static final double[] GROUND_INTAKE = { -0.8, -0.1, 0.9 };
 
-            public static final double[] L3_ALGAE = { 0.0, 0.0, 0.0 };
-            public static final double[] L2_ALGAE = { 0.0, 0.0, 0.0 };
-            public static final double[] BARGE = { 0.0, 0.0, 0.0 };
-            public static final double[] PROCESSOR = { 0.0, 0.0, 0.0 };
+            public static final double[] L3_ALGAE = { -0.3, 1.32, 0.7 };
+            public static final double[] L2_ALGAE = { -0.3, 0.92, 0.75 };
+            public static final double[] BARGE = { 0.0, 2.0, 0.75 };
+            public static final double[] PROCESSOR = { 0.35, 0.0, 0.8 };
         }
     }
 
