@@ -83,7 +83,7 @@ public class Arm extends SubsystemBase {
             double distalSetpoint = theta2 / 2.0 * Math.PI;
 
             moveWithRotations(proximalSetpoint, distalSetpoint);
-            wrist.moveTo(setpoint[2] - theta2);
+            wrist.moveTo(setpoint[2] - distalSetpoint);
         });
     }
 
