@@ -58,7 +58,7 @@ public class Arm extends SubsystemBase {
 
     /**
      * Moves the arm to the given setpoint with the given wrist angle
-     * 
+     *
      * @param setpoint first 2 numbers are x and y position, next number is the wrist angle
      * @return a {@link Command}
      */

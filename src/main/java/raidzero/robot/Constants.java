@@ -1,11 +1,21 @@
 package raidzero.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
 public class Constants {
     public static class Arm {
@@ -97,7 +107,7 @@ public class Constants {
 
             public static final int BOTTOM_LASERCAN_ID = 0;
             public static final int BOTTOM_LASER_THRESHOLD_MM = 50;
-            
+
             public static final int TOP_LASERCAN_ID = 1;
             public static final int TOP_LASER_THRESHOLD_MM = 50;
 
@@ -158,5 +168,36 @@ public class Constants {
         // Axis buttons next to algae shit
         public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
         public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
+    }
+
+    public static class Simulation {
+        public static final double BOT_WEIGHT_LBS = 90.0;
+
+        public static final double TRACK_WIDTH_IN = 18.5;
+        public static final double TRACK_LENGTH_IN = 18.5;
+
+        public static final double BOT_LENGTH_BUMPERS = 24;
+        public static final double BOT_WIDTH_BUMPERS = 24;
+
+        public static final double WHEEL_COF = 1.2;
+        public static final double SIM_LOOP_PERIOD_S = 0.002;
+
+        public static final DriveTrainSimulationConfig SWERVE_SIM_CONFIG = DriveTrainSimulationConfig.Default()
+            .withGyro(COTS.ofPigeon2())
+            .withSwerveModule(
+                new SwerveModuleSimulationConfig(
+                    DCMotor.getKrakenX60(1),
+                    DCMotor.getFalcon500(1),
+                    TunerConstants.kDriveGearRatio,
+                    TunerConstants.kSteerGearRatio,
+                    TunerConstants.kDriveFrictionVoltage,
+                    TunerConstants.kSteerFrictionVoltage,
+                    TunerConstants.kWheelRadius,
+                    TunerConstants.kSteerInertia,
+                    WHEEL_COF
+                )
+            )
+            .withTrackLengthTrackWidth(Inches.of(TRACK_LENGTH_IN), Inches.of(TRACK_WIDTH_IN))
+            .withBumperSize(Inches.of(BOT_LENGTH_BUMPERS), Inches.of(BOT_WIDTH_BUMPERS));
     }
 }

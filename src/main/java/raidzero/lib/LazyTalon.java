@@ -24,11 +24,11 @@ public class LazyTalon {
 
     /**
      * Constructs a LazyTalon instance with the specified motor identifier and configuration parameters.
-     * 
+     *
      * <p>This constructor initializes the TalonFX motor controller with custom settings including sensor-to-mechanism
      * ratio, motor inversion, and current limits for both the stator and supply. These settings ensure the motor
      * behaves as expected for its role in robotic applications.
-     * 
+     *
      * @param motorID                 the unique identifier for the motor controller
      * @param sensorToMechanismRatio  the ratio used to convert sensor readings into mechanism movement units
      * @param invertedValue           the inversion configuration for the motor output, which determines the direction of rotation
@@ -75,7 +75,7 @@ public class LazyTalon {
 
     /**
      * Configures the LazyTalon with a CANCoder feedback sensor.
-     * 
+     *
      * <p>This method initializes and applies the CANCoder configuration including magnet offset and sensor direction,
      * sets up the remote sensor feedback for the motor controller, and enables method chaining by returning this instance.</p>
      *
@@ -247,8 +247,8 @@ public class LazyTalon {
 
     /**
      * Moves the motor at the specified velocity using a motion magic voltage profile.
-     * 
-     * @param velocity the target velocity for the motion magic control. 
+     *
+     * @param velocity the target velocity for the motion magic control.
      */
     public void moveWithVelocity(double velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
@@ -273,7 +273,7 @@ public class LazyTalon {
     /**
      * Retrieves the current feedback position of the motor.
      *
-     * @return the current motor position as a double. 
+     * @return the current motor position as a double.
      */
     public double getFeedbackPosition() {
         return motor.getPosition().getValueAsDouble();
@@ -290,7 +290,7 @@ public class LazyTalon {
 
     /**
      * Retrives the current acceleration feedback from the motor.
-     * 
+     *
      * @return the current feedback velocity from the motor as a double.
      */
     public double getFeedbackAcceleration() {

@@ -4,6 +4,8 @@
 
 package raidzero.robot;
 
+import org.ironmaple.simulation.SimulatedArena;
+
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,8 +46,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledExit() {
-    }
+    public void disabledExit() {}
 
     @Override
     public void autonomousInit() {
@@ -62,8 +63,7 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {
-    }
+    public void autonomousExit() {}
 
     @Override
     public void teleopInit() {
@@ -78,8 +78,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {}
 
     @Override
-    public void teleopExit() {
-    }
+    public void teleopExit() {}
 
     @Override
     public void testInit() {
@@ -90,9 +89,14 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {}
 
     @Override
-    public void testExit() {
+    public void testExit() {}
+
+    @Override
+    public void simulationInit() {
     }
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+        SimulatedArena.getInstance().simulationPeriodic();
+    }
 }

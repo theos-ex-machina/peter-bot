@@ -4,27 +4,26 @@
 
 package raidzero.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import raidzero.robot.Constants.Arm.Positions;
+import raidzero.robot.Constants.Bindings;
+import raidzero.robot.subsystems.arm.Arm;
+import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.subsystems.drivetrain.Limelight;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
-import raidzero.robot.subsystems.arm.Arm;
-import raidzero.robot.subsystems.arm.Intake;
-import raidzero.robot.Constants.Arm.Positions;
-import raidzero.robot.Constants.Bindings;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -110,6 +109,7 @@ public class RobotContainer {
      * Registers PathPlanner commands
      */
     private void registerPathplannerCommands() {}
+
 
     /**
      * Returns the selected autonomous command
