@@ -4,8 +4,6 @@
 
 package raidzero.robot;
 
-import org.ironmaple.simulation.SimulatedArena;
-
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,6 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.ironmaple.simulation.SimulatedArena;
 import raidzero.lib.Elastic;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 
@@ -92,8 +91,7 @@ public class Robot extends TimedRobot {
     public void testExit() {}
 
     @Override
-    public void simulationInit() {
-    }
+    public void simulationInit() {}
 
     @Override
     public void simulationPeriodic() {

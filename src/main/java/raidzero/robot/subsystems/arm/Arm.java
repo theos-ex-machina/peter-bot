@@ -1,21 +1,17 @@
 package raidzero.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
-import java.util.List;
-
 import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import java.util.List;
 import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
 
@@ -134,8 +130,8 @@ public class Arm extends SubsystemBase {
     }
 
     /**
-     * Uses 2-axis inverse kinematics to calculate the joint angles 
-     * 
+     * Uses 2-axis inverse kinematics to calculate the joint angles
+     *
      * @param setpoint the x, y, wrist rotation setpoint
      * @return the proximal and distal angle setpoints in percentage of rotations
      */

@@ -1,5 +1,10 @@
 package raidzero.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Seconds;
+import static raidzero.robot.Constants.Simulation.*;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -32,13 +37,7 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
 import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
-
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Seconds;
-import static raidzero.robot.Constants.Simulation.*;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements

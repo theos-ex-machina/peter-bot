@@ -1,35 +1,25 @@
 package raidzero.robot;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Volts;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.constraint.RectangularRegionConstraint;
-import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.List;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
 public class Constants {
@@ -144,11 +134,12 @@ public class Constants {
             public static final Pose2d L4 = new Pose2d(0.25, 1.84, Rotation2d.kZero);
             public static final Angle L4_WRIST_ANGLE = Rotations.of(0.875);
             public static final List<Pose2d> L4_INTERPOLATION_PATH = List.of(
-                new Pose2d(0.0, 0.0, Rotation2d.kZero), 
+                new Pose2d(0.0, 0.0, Rotation2d.kZero),
                 new Pose2d(0.1, 1.22, Rotation2d.kZero),
                 new Pose2d(-0.1, 1.84, Rotation2d.kZero),
                 new Pose2d(0.25, 1.84, Rotation2d.kZero),
-                L4);
+                L4
+            );
 
             public static final Pose2d L3 = new Pose2d(0.25, 1.22, Rotation2d.kZero);
             public static final Angle L3_WRIST_ANGLE = Rotations.of(0.875);

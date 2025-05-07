@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
 import raidzero.robot.Constants.Arm.Positions;
 import raidzero.robot.Constants.Bindings;
 import raidzero.robot.subsystems.arm.Arm;
@@ -110,7 +109,6 @@ public class RobotContainer {
      * Registers PathPlanner commands
      */
     private void registerPathplannerCommands() {}
-
 
     /**
      * Returns the selected autonomous command
