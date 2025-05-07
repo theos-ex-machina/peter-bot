@@ -1,18 +1,23 @@
 package raidzero.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.sim.TalonFXSSimState;
+
+import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.LazyFXS;
-import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
+import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.Wrist;
 
 public interface ArmIO {
-    void moveWithRotations(double proximalSetpoint, double distalSeptoint);
+    void moveJoints(Angle proximalSetpoint, Angle distalSeptoint);
 
-    void moveWrist(double setpoint);
+    void moveWrist(Angle setpoint);
 
     public class Real implements ArmIO {
-        private LazyFXS proximalJoint, distalJoint;
-        private LazyFXS wrist;
+        protected LazyFXS proximalJoint, distalJoint;
+        protected LazyFXS wrist;
 
         public Real() {
             proximalJoint = new LazyFXS(
@@ -58,30 +63,43 @@ public interface ArmIO {
         }
 
         @Override
-        public void moveWithRotations(double proximalSetpoint, double distalSeptoint) {
+        public void moveJoints(Angle proximalSetpoint, Angle distalSeptoint) {
             proximalJoint.moveTo(proximalSetpoint);
             distalJoint.moveTo(distalSeptoint);
         }
 
         @Override
-        public void moveWrist(double setpoint) {
+        public void moveWrist(Angle setpoint) {
             wrist.moveTo(setpoint);
         }
     }
 
-    public class Sim implements ArmIO {
+    public class Sim extends Real {
+        TalonFXSSimState proximalJointSim, distalJointSim;
+        TalonFXSSimState wristSim;
+
         public Sim() {
+            super();
 
+            proximalJointSim = super.proximalJoint.getMotor().getSimState();
+            proximalJointSim.setSupplyVoltage(Volts.of(12));
+
+            distalJointSim = super.distalJoint.getMotor().getSimState();
+            distalJointSim.setSupplyVoltage(Volts.of(12));
+
+            wristSim = super.wrist.getMotor().getSimState();
+            wristSim.setSupplyVoltage(12);
         }
 
         @Override
-        public void moveWithRotations(double proximalSetpoint, double distalSeptoint) {
-            // TODO Auto-generated method stub
+        public void moveJoints(Angle proximalSetpoint, Angle distalSeptoint) {
+            proximalJointSim.setRawRotorPosition(proximalSetpoint);
+            distalJointSim.setRawRotorPosition(distalSeptoint);
         }
 
         @Override
-        public void moveWrist(double setpoint) {
-            // TODO Auto-generated method stub
+        public void moveWrist(Angle setpoint) {
+            wristSim.setRawRotorPosition(setpoint);
         }
     }
 }

@@ -79,19 +79,20 @@ public class RobotContainer {
         // auto home when let go or obtain algae or coral
         intake.hasCoral().onTrue(arm.home());
         intake.hasAlgae().onTrue(arm.home());
+
         intake.hasCoral().onFalse(arm.home());
         intake.hasAlgae().onFalse(arm.home());
 
-        Bindings.L1.whileTrue(arm.moveTo(Positions.L1));
-        Bindings.L2.whileTrue(arm.moveTo(Positions.L2));
-        Bindings.L3.whileTrue(arm.moveTo(Positions.L3));
-        Bindings.L4.whileTrue(arm.moveTo(Positions.L4));
+        Bindings.L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
+        Bindings.L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
+        Bindings.L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
+        Bindings.L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
-        Bindings.STATION.whileTrue(arm.moveTo(Positions.STATION));
-        Bindings.GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE));
+        Bindings.STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
+        Bindings.GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
 
-        Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR));
-        Bindings.BARGE.whileTrue(arm.moveTo(Positions.BARGE));
+        Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
+        Bindings.BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE));
 
         Bindings.CORAL_INTAKE.whileTrue(intake.intakeCoral());
         Bindings.CORAL_EXTAKE.whileTrue(intake.extakeCoral());
@@ -99,8 +100,8 @@ public class RobotContainer {
         Bindings.ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
         Bindings.ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
 
-        Bindings.L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE));
-        Bindings.L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE));
+        Bindings.L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
+        Bindings.L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
 
         swerve.registerTelemetry(logger::telemeterize);
     }

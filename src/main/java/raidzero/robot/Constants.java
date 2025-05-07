@@ -2,7 +2,13 @@ package raidzero.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -12,7 +18,16 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.constraint.RectangularRegionConstraint;
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
@@ -126,18 +141,45 @@ public class Constants {
         }
 
         public static class Positions {
-            public static final double[] L4 = { -0.25, 1.84, 0.875 };
-            public static final double[] L3 = { -0.25, 1.22, 0.875 };
-            public static final double[] L2 = { -0.25, 0.82, 0.875 };
-            public static final double[] L1 = { -0.30, 0.47, 0.875 };
+            public static final Pose2d L4 = new Pose2d(0.25, 1.84, Rotation2d.kZero);
+            public static final Angle L4_WRIST_ANGLE = Rotations.of(0.875);
+            public static final List<Pose2d> L4_INTERPOLATION_PATH = List.of(
+                new Pose2d(0.0, 0.0, Rotation2d.kZero), 
+                new Pose2d(0.1, 1.22, Rotation2d.kZero),
+                new Pose2d(-0.1, 1.84, Rotation2d.kZero),
+                new Pose2d(0.25, 1.84, Rotation2d.kZero),
+                L4);
 
-            public static final double[] STATION = { -0.35, 0.95, 0.125 };
-            public static final double[] GROUND_INTAKE = { -0.8, -0.1, 0.9 };
+            public static final Pose2d L3 = new Pose2d(0.25, 1.22, Rotation2d.kZero);
+            public static final Angle L3_WRIST_ANGLE = Rotations.of(0.875);
 
-            public static final double[] L3_ALGAE = { -0.3, 1.32, 0.7 };
-            public static final double[] L2_ALGAE = { -0.3, 0.92, 0.75 };
-            public static final double[] BARGE = { 0.0, 2.0, 0.75 };
-            public static final double[] PROCESSOR = { 0.35, 0.0, 0.8 };
+            public static final Pose2d L2 = new Pose2d(0.25, 0.82, Rotation2d.kZero);
+            public static final Angle L2_WRIST_ANGLE = Rotations.of(0.875);
+
+            public static final Pose2d L1 = new Pose2d(0.30, 0.47, Rotation2d.kZero);
+            public static final Angle L1_WRIST_ANGLE = Rotations.of(0.875);
+
+            public static final Pose2d STATION = new Pose2d(0.35, 0.95, Rotation2d.kZero);
+            public static final Angle STATION_WRIST_ANGLE = Rotations.of(0.125);
+
+            public static final Pose2d GROUND_INTAKE = new Pose2d(0.8, -0.1, Rotation2d.kZero);
+            public static final Angle GROUND_INTAKE_WRIST_ANGLE = Rotations.of(0.9);
+
+            public static final Pose2d L3_ALGAE = new Pose2d(0.3, 1.32, Rotation2d.kZero);
+            public static final Angle L3_ALGAE_WRIST_ANGLE = Rotations.of(0.7);
+
+            public static final Pose2d L2_ALGAE = new Pose2d(0.3, 0.92, Rotation2d.kZero);
+            public static final Angle L2_ALGAE_WRIST_ANGLE = Rotations.of(0.75);
+
+            public static final Pose2d BARGE = new Pose2d(0.0, 2.0, Rotation2d.kZero);
+            public static final Angle BARGE_WRIST_ANGLE = Rotations.of(0.75);
+
+            public static final Pose2d PROCESSOR = new Pose2d(-0.35, 0.0, Rotation2d.kZero);
+            public static final Angle PROCESSOR_WRIST_ANGLE = Rotations.of(0.8);
+
+            public static final LinearVelocity MAX_LINEAR_VELOCITY = LinearVelocity.ofRelativeUnits(1.0, MetersPerSecond);
+            public static final LinearAcceleration MAX_LINEAR_ACCELERATION = LinearAcceleration
+                .ofRelativeUnits(1.0, MetersPerSecondPerSecond);
         }
     }
 

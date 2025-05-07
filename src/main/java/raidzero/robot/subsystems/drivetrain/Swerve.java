@@ -64,6 +64,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     private boolean waypointsTransformed = false;
 
+    private MapleSimSwerveDrivetrain simSwerve = null;
     private static Swerve system;
 
     /** ... */
@@ -187,32 +188,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         field.setRobotPose(this.getState().Pose);
     }
 
-    /**
-     * Starts the simulation thread.
-     */
-    // private void startSimThread() {
-    // this.lastSimTime = Utils.getCurrentTimeSeconds();
-
-    // /*
-    // * Run simulation at a faster rate so PID gains behave more reasonably
-    // */
-    // this.simNotifier = new Notifier(() -> {
-    // final double currentTime = Utils.getCurrentTimeSeconds();
-    // double deltaTime = currentTime - lastSimTime;
-    // lastSimTime = currentTime;
-
-    // /* use the measured time delta, get battery voltage from WPILib */
-    // updateSimState(deltaTime, RobotController.getBatteryVoltage());
-    // });
-
-    // this.simNotifier.startPeriodic(SIM_LOOP_PERIOD);
-    // }
-
-    private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
-
     @SuppressWarnings("unchecked")
     private void startSimThread() {
-        mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
+        simSwerve = new MapleSimSwerveDrivetrain(
             Seconds.of(SIM_LOOP_PERIOD_S),
             Pounds.of(BOT_WEIGHT_LBS),
             Inches.of(BOT_LENGTH_BUMPERS), // bumper length
@@ -230,7 +208,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         );
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
-        simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
+        simNotifier = new Notifier(simSwerve::update);
         simNotifier.startPeriodic(SIM_LOOP_PERIOD_S);
     }
 
@@ -275,8 +253,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     @Override
     public void resetPose(Pose2d pose) {
-        if (this.mapleSimSwerveDrivetrain != null) {
-            mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
+        if (this.simSwerve != null) {
+            simSwerve.mapleSimDrive.setSimulationWorldPose(pose);
             Timer.delay(0.05); // Wait for simulation to update
         }
         super.resetPose(pose);

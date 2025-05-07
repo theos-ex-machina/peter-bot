@@ -15,6 +15,8 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.units.measure.Angle;
+
 public class LazyFXS {
     private TalonFXS motor, follower;
     private int motorID;
@@ -243,7 +245,7 @@ public class LazyFXS {
      *
      * @param setpoint the target position setpoint for the motion magic control.
      */
-    public void moveTo(double setpoint) {
+    public void moveTo(Angle setpoint) {
         motor.setControl(new MotionMagicExpoVoltage(setpoint));
     }
 
