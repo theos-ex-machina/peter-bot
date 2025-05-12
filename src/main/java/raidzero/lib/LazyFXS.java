@@ -15,6 +15,8 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class LazyFXS {
     private TalonFXS motor, follower;
@@ -256,7 +258,7 @@ public class LazyFXS {
      *
      * @param velocity the target velocity for the motion magic control.
      */
-    public void moveWithVelocity(double velocity) {
+    public void moveWithVelocity(AngularVelocity velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
     }
 
@@ -285,8 +287,8 @@ public class LazyFXS {
      *
      * @return the current motor position as a double.
      */
-    public double getFeedbackPosition() {
-        return motor.getPosition().getValueAsDouble();
+    public Angle getFeedbackPosition() {
+        return motor.getPosition().getValue();
     }
 
     /**
@@ -294,8 +296,8 @@ public class LazyFXS {
      *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackVelocity() {
-        return motor.getVelocity().getValueAsDouble();
+    public AngularVelocity getFeedbackVelocity() {
+        return motor.getVelocity().getValue();
     }
 
     /**
@@ -303,8 +305,8 @@ public class LazyFXS {
      *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackAcceleration() {
-        return motor.getAcceleration().getValueAsDouble();
+    public AngularAcceleration getFeedbackAcceleration() {
+        return motor.getAcceleration().getValue();
     }
 
     /**

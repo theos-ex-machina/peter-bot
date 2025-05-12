@@ -13,6 +13,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class LazyTalon {
     private TalonFX motor, follower;
     private int motorID;
@@ -161,6 +165,9 @@ public class LazyTalon {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
 
+        motorConfiguration.MotionMagic.MotionMagicExpo_kA = a;
+        motorConfiguration.MotionMagic.MotionMagicExpo_kV = v;
+
         return this;
     }
 
@@ -241,7 +248,7 @@ public class LazyTalon {
      *
      * @param setpoint the target position setpoint for the motion magic control.
      */
-    public void moveTo(double setpoint) {
+    public void moveTo(Angle setpoint) {
         motor.setControl(new MotionMagicExpoVoltage(setpoint));
     }
 
@@ -250,7 +257,7 @@ public class LazyTalon {
      *
      * @param velocity the target velocity for the motion magic control.
      */
-    public void moveWithVelocity(double velocity) {
+    public void moveWithVelocity(AngularVelocity velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
     }
 
@@ -275,8 +282,8 @@ public class LazyTalon {
      *
      * @return the current motor position as a double.
      */
-    public double getFeedbackPosition() {
-        return motor.getPosition().getValueAsDouble();
+    public Angle getFeedbackPosition() {
+        return motor.getPosition().getValue();
     }
 
     /**
@@ -284,8 +291,8 @@ public class LazyTalon {
      *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackVelocity() {
-        return motor.getVelocity().getValueAsDouble();
+    public AngularVelocity getFeedbackVelocity() {
+        return motor.getVelocity().getValue();
     }
 
     /**
@@ -293,8 +300,8 @@ public class LazyTalon {
      *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackAcceleration() {
-        return motor.getAcceleration().getValueAsDouble();
+    public AngularAcceleration getFeedbackAcceleration() {
+        return motor.getAcceleration().getValue();
     }
 
     /**

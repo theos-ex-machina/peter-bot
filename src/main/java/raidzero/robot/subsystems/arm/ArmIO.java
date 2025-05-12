@@ -11,8 +11,10 @@ import raidzero.robot.Constants.Arm.Wrist;
 
 public interface ArmIO {
     void moveJoints(Angle proximalSetpoint, Angle distalSeptoint);
+    Angle[] getJointAngles();
 
     void moveWrist(Angle setpoint);
+    Angle getWristAngle();
 
     public class Real implements ArmIO {
         protected LazyFXS proximalJoint, distalJoint;
@@ -68,8 +70,18 @@ public interface ArmIO {
         }
 
         @Override
+        public Angle[] getJointAngles() {
+            return new Angle[] { proximalJoint.getFeedbackPosition(), distalJoint.getFeedbackPosition() };
+        }
+
+        @Override
         public void moveWrist(Angle setpoint) {
             wrist.moveTo(setpoint);
+        }
+
+        @Override
+        public Angle getWristAngle() {
+            return wrist.getFeedbackPosition();
         }
     }
 

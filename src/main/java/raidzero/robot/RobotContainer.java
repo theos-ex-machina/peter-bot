@@ -17,12 +17,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import raidzero.robot.Constants.Arm.Positions;
-import raidzero.robot.Constants.Bindings;
 import raidzero.robot.subsystems.arm.Arm;
 import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.subsystems.drivetrain.Limelight;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
+import raidzero.robot.Constants.Swerve.Setpoints;
+
+import static raidzero.robot.Constants.Bindings.*;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -75,6 +77,26 @@ public class RobotContainer {
         arm.setDefaultCommand(arm.home());
         intake.setDefaultCommand(intake.stop());
 
+        L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
+        L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
+        L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
+        L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
+
+        STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
+        GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+
+        PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
+        BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE));
+
+        CORAL_INTAKE.whileTrue(intake.intakeCoral());
+        CORAL_EXTAKE.whileTrue(intake.extakeCoral());
+
+        ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
+        ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
+
+        L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
+        L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+
         // auto home when let go or obtain algae or coral
         intake.hasCoral().onTrue(arm.home());
         intake.hasAlgae().onTrue(arm.home());
@@ -82,25 +104,29 @@ public class RobotContainer {
         intake.hasCoral().onFalse(arm.home());
         intake.hasAlgae().onFalse(arm.home());
 
-        Bindings.L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
-        Bindings.L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
-        Bindings.L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
-        Bindings.L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
+        // has coral but not there yet
+        L4.and(intake.hasCoral()).and(swerve.atReef().negate())
+            .whileTrue(swerve.goToPose(Setpoints.RIGHT_REEF_WAYPOINTS.get(0)));
 
-        Bindings.STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
-        Bindings.GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+        // has coral and there but no arm
+        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atHome().negate())
+            .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
-        Bindings.PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
-        Bindings.BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE));
+        // has coral, there and arm
+        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4())
+            .whileTrue(intake.extakeCoral());
 
-        Bindings.CORAL_INTAKE.whileTrue(intake.intakeCoral());
-        Bindings.CORAL_EXTAKE.whileTrue(intake.extakeCoral());
-
-        Bindings.ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
-        Bindings.ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
-
-        Bindings.L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
-        Bindings.L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+        // no coral but wants some
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation().negate())
+            .whileTrue(swerve.goToPose(Setpoints.STATION_WAYPOINTS.get(0)));
+        
+        // there but no arm
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation().negate())
+            .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
+        
+        // has arm
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation())
+            .whileTrue(intake.intakeCoral());
 
         swerve.registerTelemetry(logger::telemeterize);
     }

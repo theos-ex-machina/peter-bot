@@ -17,7 +17,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -35,7 +34,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.function.BooleanSupplier;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import java.util.function.Supplier;
 import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 
@@ -127,19 +127,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 )
             ).finallyDo((interrupted) -> this.stop())
         );
-    }
-
-    /**
-     * Returns a {@link BooleanSupplier} that checks if the robot is not in a climb zone
-     *
-     * @return A {@link BooleanSupplier} that checks if the robot is not in a climb zone
-     */
-    public BooleanSupplier isNotInClimbZone() {
-        return () -> {
-            Translation2d currTranslation = this.getState().Pose.getTranslation();
-
-            return currTranslation.getX() > 7.525 && currTranslation.getX() < 10.025;
-        };
     }
 
     /**
@@ -248,6 +235,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         } catch (Exception e) {
             DriverStation.reportError("Failed to load PathPlanner config and configure Autobuilder", e.getStackTrace());
         }
+    }
+
+    //TODO: Write method
+    public Trigger atStation() {
+        return null;
+    }
+
+    public Trigger atReef() {
+        return null;
     }
 
     @Override

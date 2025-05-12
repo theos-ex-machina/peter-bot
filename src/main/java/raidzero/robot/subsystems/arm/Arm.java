@@ -2,6 +2,8 @@ package raidzero.robot.subsystems.arm;
 
 import java.util.List;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
@@ -9,30 +11,28 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.ctre.phoenix6.Utils;
 
 import raidzero.robot.Constants.Arm.DistalJoint;
+import raidzero.robot.Constants.Arm.Positions;
 import raidzero.robot.Constants.Arm.ProximalJoint;
 import raidzero.lib.Interpolate;
 
 public class Arm extends SubsystemBase {
-    private Pose2d currentPose;
-
     private static Arm system;
     private ArmIO io;
 
     private Arm(ArmIO io) {
         this.io = io;
-
-        this.currentPose = new Pose2d(Meters.of(0), Meters.of(0), Rotation2d.kZero);
     }
 
     /**
-     * Moves the arm to the given setpoint with the given wrist angle
+     * Moves the arm to the supplied setpoint with the supplied wrist angle
      *
      * @param setpoint the goal position of the arm
      * @param wristAngle the angle of the wrist relative to the bot
@@ -44,38 +44,43 @@ public class Arm extends SubsystemBase {
 
             io.moveJoints(angles[0], angles[1]);
             io.moveWrist(wristAngle.minus(angles[0]));
-
-            currentPose = setpoint;
         });
     }
 
+    /**
+     * Interpolates along a supplied path, ending on the last element in the list
+    
+     * @param points the path to follow
+     * @param wristAngle the final wrist angle
+     * @return a {@link Command}
+     */
     public Command interpolateTo(List<Pose2d> points, Angle wristAngle) {
-        return new Interpolate(points, 1.0, (pose) -> {
+        return new Interpolate<Pose2d>(points, 1.0, (pose) -> {
             Angle[] jonitAngles = calculateJointAngles(pose);
             io.moveJoints(jonitAngles[0], jonitAngles[1]);
             io.moveWrist(wristAngle);
-        }, system);
+        }, Interpolate.pose2dInterpolator, system);
     }
 
+    /**
+     * Returns the arm to it's home / stowed position
+     * 
+     * @return a {@link Command}
+     */
     public Command home() {
         return run(() -> {
             io.moveJoints(Rotations.of(0.25), Rotations.of(0.75));
-
-            if (Intake.system().hasCoral().getAsBoolean()) {
-                io.moveWrist(Rotations.of(0));
-            } else {
-                io.moveWrist(Rotations.of(0.25));
-            }
+            io.moveWrist(Rotations.of(0));
         });
     }
 
     /**
      * Uses 2-axis inverse kinematics to calculate the joint angles
      *
-     * @param setpoint the x, y, wrist rotation setpoint
-     * @return the proximal and distal angle setpoints in percentage of rotations
+     * @param setpoint the arm setpoint
+     * @return the proximal and distal angle setpoints
      */
-    private Angle[] calculateJointAngles(Pose2d setpoint) {
+    private static Angle[] calculateJointAngles(Pose2d setpoint) {
         double x = setpoint.getMeasureX().in(Meters);
         double y = setpoint.getMeasureY().in(Meters);
 
@@ -95,6 +100,120 @@ public class Arm extends SubsystemBase {
         );
 
         return new Angle[] { Radians.of(theta1), Radians.of(theta2) };
+    }
+
+    /**
+     * Calculates the cartesian pose given the angles of the joints 
+     * 
+     * @param jointAngles the angles of the jointsj
+     * @return the cartesian pose
+     */
+    private static Pose2d calculatePose(Angle[] jointAngles) {
+        double theta1 = jointAngles[0].in(Radians);
+        double theta2 = jointAngles[1].in(Radians);
+
+        double x = ProximalJoint.LENGTH * Math.sin(theta1) + DistalJoint.LENGTH * Math.sin(theta1 + theta2);
+        double y = ProximalJoint.LENGTH * Math.cos(theta1) + DistalJoint.LENGTH * Math.cos(theta1 + theta2);
+
+        return new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
+    }
+
+    public Trigger atL4() {
+        return atSetpoint(Positions.L4, Positions.L4_WRIST_ANGLE);
+    }
+
+    public Trigger atL3() {
+        return atSetpoint(Positions.L3, Positions.L3_WRIST_ANGLE);
+    }
+
+    public Trigger atL2() {
+        return atSetpoint(Positions.L2, Positions.L2_WRIST_ANGLE);
+    }
+
+    public Trigger atL1() {
+        return atSetpoint(Positions.L1, Positions.L1_WRIST_ANGLE);
+    }
+
+    public Trigger atStation() {
+        return atSetpoint(Positions.STATION, Positions.STATION_WRIST_ANGLE);
+    }
+
+    public Trigger atGroundIntake() {
+        return atSetpoint(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE);
+    }
+
+    public Trigger atL3Algae() {
+        return atSetpoint(Positions.L3, Positions.L3_WRIST_ANGLE);
+    }
+
+    public Trigger atL2Algae() {
+        return atSetpoint(Positions.L2, Positions.L2_WRIST_ANGLE);
+    }
+
+    public Trigger atBarge() {
+        return atSetpoint(Positions.BARGE, Positions.BARGE_WRIST_ANGLE);
+    }
+
+    public Trigger atProcessor() {
+        return atSetpoint(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE);
+    }
+
+    public Trigger atHome() {
+        return atSetpoint(new Angle[] { Rotations.of(0.25), Rotations.of(0.0) }, Rotations.of(0.0));
+    }
+
+    /**
+     * Returns a {@link Trigger} that becomes active if all joints of the arm are within a preset tolerance of the supplied setpoint
+     * 
+     * @param setpoint the queried setpoint
+     * @param wristAngle the queried wrist angle
+     * @return a {@link Trigger}
+     */
+    private Trigger atSetpoint(Pose2d setpoint, Angle wristAngle) {
+        Angle[] angles = calculateJointAngles(setpoint);
+
+        Angle[] currentAngles = io.getJointAngles();
+        Angle currentWristAngle = io.getWristAngle();
+
+        double positionTolerance = Positions.POSITION_TOLERANCE.in(Degrees);
+        return new Trigger(
+            () -> currentAngles[0].minus(angles[0]).abs(Degrees) < positionTolerance &&
+                currentAngles[1].minus(angles[1]).abs(Degrees) < positionTolerance &&
+                currentWristAngle.minus(wristAngle).abs(Degree) < positionTolerance
+        );
+    }
+
+    /**
+     * Returns a {@link Trigger} that becomes active if all joints of the arm are within a preset tolerance of the supplied setpoint
+     * 
+     * @param setpoint the queried setpoint
+     * @param wristAngle the queried wrist angle
+     * @return a {@link Trigger}
+     */
+    private Trigger atSetpoint(Angle[] setpoint, Angle wristAngle) {
+        Angle[] currentAngles = io.getJointAngles();
+        Angle currentWristAngle = io.getWristAngle();
+
+        double positionTolerance = Positions.POSITION_TOLERANCE.in(Degrees);
+        return new Trigger(
+            () -> currentAngles[0].minus(setpoint[0]).abs(Degrees) < positionTolerance &&
+                currentAngles[1].minus(setpoint[1]).abs(Degrees) < positionTolerance &&
+                currentWristAngle.minus(wristAngle).abs(Degree) < positionTolerance
+        );
+    }
+
+    @Override
+    public void periodic() {
+        Angle[] angles = io.getJointAngles();
+        Pose2d calculatedPose = calculatePose(angles);
+
+        SmartDashboard.putNumber("Arm Proximal Angle", angles[0].in(Degrees));
+        SmartDashboard.putNumber("Arm Distal Angle", angles[1].in(Degrees));
+
+        SmartDashboard.putNumber("Arm Calculated X", calculatedPose.getX());
+        SmartDashboard.putNumber("Arm Calculated Y", calculatedPose.getY());
+
+        SmartDashboard.putNumber("Wrist Angle", io.getWristAngle().in(Degrees));
     }
 
     public static Arm system() {

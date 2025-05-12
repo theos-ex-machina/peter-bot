@@ -1,30 +1,40 @@
 package raidzero.lib;
 
-import static edu.wpi.first.units.Units.Meters;
-
 import java.util.List;
 import java.util.function.Consumer;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class Interpolate extends Command {
-    private final List<Pose2d> path;
+
+public class Interpolate<T> extends Command {
+    private final List<T> path;
     private final double segmentTime;
-    private Consumer<Pose2d> poseConsumer;
+    private final Consumer<T> poseConsumer;
+    private final PointInterpolator<T> interpolator;
 
     private final Timer timer = new Timer();
 
     private int currentSegment = 0;
     private double segmentStartTime = 0.0;
 
-    public Interpolate(List<Pose2d> path, double segmentTimeSeconds, Consumer<Pose2d> poseConsumer, Subsystem... systems) {
+    /**
+     * Constructs an Interpolate object for interpolating between points in a path.
+     *
+     * @param path the list of points to interpolate between
+     * @param segmentTimeSeconds the time in seconds for each segment of the path
+     * @param poseConsumer a consumer that accepts the interpolated pose at each step
+     * @param interpolator the interpolator used to compute intermediate points between path elements
+     * @param systems the subsystems required by this command
+     */
+    public Interpolate(List<T> path, double segmentTimeSeconds, Consumer<T> poseConsumer, PointInterpolator<T> interpolator, Subsystem... systems) {
         this.path = path;
         this.segmentTime = segmentTimeSeconds;
         this.poseConsumer = poseConsumer;
+        this.interpolator = interpolator;
 
         super.addRequirements(systems);
     }
@@ -42,18 +52,15 @@ public class Interpolate extends Command {
         if (currentSegment >= path.size() - 1)
             return;
 
-        Pose2d start = path.get(currentSegment);
-        Pose2d end = path.get(currentSegment + 1);
+        T start = path.get(currentSegment);
+        T end = path.get(currentSegment + 1);
 
         double elapsed = timer.get() - segmentStartTime;
         double t = Math.min(elapsed / segmentTime, 1.0);
 
-        double x = interpolate(start.getX(), end.getX(), t);
-        double y = interpolate(start.getY(), end.getY(), t);
+        T interpolatedPose = this.interpolator.interpolate(start, end, t);
 
-        Pose2d targetPose = new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
-
-        poseConsumer.accept(targetPose);
+        poseConsumer.accept(interpolatedPose);
 
         if (t >= 1.0) {
             currentSegment++;
@@ -69,11 +76,20 @@ public class Interpolate extends Command {
     @Override
     public void end(boolean interrupted) {
         timer.stop();
-        Pose2d finalPose = path.get(path.size() - 1);
+        T finalPose = path.get(path.size() - 1);
         poseConsumer.accept(finalPose);
     }
 
-    private double interpolate(double a, double b, double t) {
-        return a + (b - a) * t;
+    @FunctionalInterface
+    interface PointInterpolator<U> {
+        U interpolate(U start, U end, double t);
     }
+
+    public static PointInterpolator<Pose2d> pose2dInterpolator = (startPose, endPose, t) -> {
+        return startPose.interpolate(endPose, t);
+    };
+
+    public static PointInterpolator<Angle> angleInterpolator = (startAngle, endAngle, t) -> {
+    return  startAngle.plus(endAngle.minus(startAngle).times(t));
+    };
 }
