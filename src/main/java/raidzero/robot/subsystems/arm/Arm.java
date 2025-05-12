@@ -1,19 +1,23 @@
 package raidzero.robot.subsystems.arm;
 
+import java.util.List;
+
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.List;
+
+import com.ctre.phoenix6.Utils;
+
 import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
+import raidzero.lib.Interpolate;
 
 public class Arm extends SubsystemBase {
     private Pose2d currentPose;
@@ -46,75 +50,11 @@ public class Arm extends SubsystemBase {
     }
 
     public Command interpolateTo(List<Pose2d> points, Angle wristAngle) {
-        class FollowPathCommand extends Command {
-            private final List<Pose2d> path;
-            private final double segmentTime; // seconds to spend between each waypoint
-            private final Timer timer = new Timer();
-
-            private int currentSegment = 0;
-            private double segmentStartTime = 0.0;
-
-            public FollowPathCommand(List<Pose2d> path, double segmentTimeSeconds) {
-                this.path = path;
-                this.segmentTime = segmentTimeSeconds;
-
-                super.addRequirements(system);
-            }
-
-            @Override
-            public void initialize() {
-                timer.reset();
-                timer.start();
-                currentSegment = 0;
-                segmentStartTime = 0.0;
-            }
-
-            @Override
-            public void execute() {
-                if (currentSegment >= path.size() - 1)
-                    return;
-
-                Pose2d start = path.get(currentSegment);
-                Pose2d end = path.get(currentSegment + 1);
-
-                double elapsed = timer.get() - segmentStartTime;
-                double t = Math.min(elapsed / segmentTime, 1.0);
-
-                double x = lerp(start.getX(), end.getX(), t);
-                double y = lerp(start.getY(), end.getY(), t);
-
-                Pose2d targetPose = new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
-                Angle[] jointAngles = calculateJointAngles(targetPose);
-                io.moveJoints(jointAngles[0], jointAngles[1]);
-                io.moveWrist(wristAngle);
-
-                if (t >= 1.0) {
-                    currentSegment++;
-                    segmentStartTime = timer.get();
-                }
-            }
-
-            @Override
-            public boolean isFinished() {
-                return currentSegment >= path.size() - 1;
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                timer.stop();
-                Pose2d finalPose = path.get(path.size() - 1);
-
-                Angle[] jointAngles = calculateJointAngles(finalPose);
-                io.moveJoints(jointAngles[0], jointAngles[1]);
-                io.moveWrist(wristAngle);
-            }
-
-            private double lerp(double a, double b, double t) {
-                return a + (b - a) * t;
-            }
-        }
-
-        return new FollowPathCommand(points, 1.0);
+        return new Interpolate(points, 1.0, (pose) -> {
+            Angle[] jonitAngles = calculateJointAngles(pose);
+            io.moveJoints(jonitAngles[0], jonitAngles[1]);
+            io.moveWrist(wristAngle);
+        }, system);
     }
 
     public Command home() {
@@ -139,7 +79,7 @@ public class Arm extends SubsystemBase {
         double x = setpoint.getMeasureX().in(Meters);
         double y = setpoint.getMeasureY().in(Meters);
 
-        double r = Math.sqrt(x * x + y * y); // Distance from origin to target
+        double r = Math.sqrt(x * x + y * y);
 
         double cosTheta2 = Math.max(
             -1, Math.min(

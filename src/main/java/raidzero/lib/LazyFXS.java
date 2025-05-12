@@ -164,6 +164,9 @@ public class LazyFXS {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
 
+        motorConfiguration.MotionMagic.MotionMagicExpo_kA = a;
+        motorConfiguration.MotionMagic.MotionMagicExpo_kV = v;
+
         return this;
     }
 

@@ -137,7 +137,6 @@ public class Constants {
                 new Pose2d(0.0, 0.0, Rotation2d.kZero),
                 new Pose2d(0.1, 1.22, Rotation2d.kZero),
                 new Pose2d(-0.1, 1.84, Rotation2d.kZero),
-                new Pose2d(0.25, 1.84, Rotation2d.kZero),
                 L4
             );
 
