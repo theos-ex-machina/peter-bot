@@ -81,9 +81,9 @@ public class TunerConstants {
     // This may need to be tuned to your individual robot
     private static final double kCoupleRatio = 0;
 
-    private static final double kDriveGearRatio = 4.76;
-    private static final double kSteerGearRatio = 18.75;
-    private static final Distance kWheelRadius = Inches.of(1.9);
+    public static final double kDriveGearRatio = 4.76;
+    public static final double kSteerGearRatio = 18.75;
+    public static final Distance kWheelRadius = Inches.of(1.9);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;
@@ -91,11 +91,11 @@ public class TunerConstants {
     private static final int kPigeonId = 0;
 
     // These are only used for simulation
-    private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);
-    private static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.01);
+    public static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.01);
+    public static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.01);
     // Simulated voltage necessary to overcome friction
-    private static final Voltage kSteerFrictionVoltage = Volts.of(0.2);
-    private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
+    public static final Voltage kSteerFrictionVoltage = Volts.of(0.2);
+    public static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
         .withCANBusName(kCANBus.getName())
@@ -195,7 +195,7 @@ public class TunerConstants {
      */
     public static Swerve createDrivetrain() {
         return new Swerve(
-            DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
+            DrivetrainConstants, 100, FrontLeft, FrontRight, BackLeft, BackRight
         );
     }
 

@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.arm;
 
+import static raidzero.robot.Constants.Arm.Intake.*;
+
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.lib.LazyCan;
 import raidzero.lib.LazyFXS;
-
-import static raidzero.robot.Constants.Arm.Intake.*;
 
 public class Intake extends SubsystemBase {
     private LazyFXS roller;
@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Intakes an lgae
-    
+
      * @return A {@link Command} that intakes an algae
      */
     public Command intakeAlgae() {
@@ -91,7 +91,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Holds algae if in the intake, else not
-     * 
+     *
      * @return A {@link Command}
      */
     public Command idleBehavior() {
@@ -106,7 +106,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Trigger to detect if algae is in the intake
-     * 
+     *
      * @return a {@link Trigger}
      */
     public Trigger hasAlgae() {
@@ -115,7 +115,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Trigger to detect if coral is in the intake
-     * 
+     *
      * @return a {@link Trigger}
      */
     public Trigger hasCoral() {

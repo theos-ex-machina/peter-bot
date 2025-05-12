@@ -1,5 +1,10 @@
 package raidzero.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Seconds;
+import static raidzero.robot.Constants.Simulation.*;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -12,10 +17,10 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -23,13 +28,14 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.function.BooleanSupplier;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import java.util.function.Supplier;
 import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 
@@ -38,9 +44,7 @@ import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain
  * Subsystem so it can easily be used in command-based projects.
  */
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
-    private static final double SIM_LOOP_PERIOD = 0.005; // 5 ms
     private Notifier simNotifier = null;
-    private double lastSimTime;
 
     // Blue alliance sees forward as 0 degrees (toward red alliance wall)
     private static final Rotation2d BLUE_ALLLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
@@ -59,99 +63,39 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     private boolean waypointsTransformed = false;
 
+    private MapleSimSwerveDrivetrain simSwerve = null;
     private static Swerve system;
 
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
-     * @param modules             Constants for each specific module
-     */
-    public Swerve(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, modules);
-
-        SmartDashboard.putData("Field", field);
-
-        configureAutoBuilder();
-        initializeOtf();
-
-        if (Utils.isSimulation()) {
-            this.startSimThread();
-        }
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-     *                                unspecified or set to 0 Hz, this is 250 Hz on
-     *                                CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                 Constants for each specific module
-     */
+    /** ... */
     public Swerve(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
-
+        super(
+            drivetrainConstants, odometryUpdateFrequency,
+            // modules
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules)
+        );
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
         SmartDashboard.putData("Field", field);
 
         configureAutoBuilder();
         initializeOtf();
-
-        if (Utils.isSimulation()) {
-            this.startSimThread();
-        }
     }
 
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not
-     * construct
-     * the devices themselves. If they need the devices, they can access them
-     * through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants       Drivetrain-wide constants for the swerve
-     *                                  drive
-     * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
-     *                                  unspecified or set to 0 Hz, this is 250 Hz
-     *                                  on
-     *                                  CAN FD, and 100 Hz on CAN 2.0.
-     * @param odometryStandardDeviation The standard deviation for odometry
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
-     * @param visionStandardDeviation   The standard deviation for vision
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
-     * @param modules                   Constants for each specific module
-     */
+    /** ... */
     public Swerve(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency, Matrix<N3, N1> odometryStandardDeviation, Matrix<N3, N1> visionStandardDeviation, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
-
+        super(
+            drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
+            // modules
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules)
+        );
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
         SmartDashboard.putData("Field", field);
 
         configureAutoBuilder();
         initializeOtf();
-
-        if (Utils.isSimulation()) {
-            this.startSimThread();
-        }
     }
 
     /**
@@ -183,19 +127,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 )
             ).finallyDo((interrupted) -> this.stop())
         );
-    }
-
-    /**
-     * Returns a {@link BooleanSupplier} that checks if the robot is not in a climb zone
-     *
-     * @return A {@link BooleanSupplier} that checks if the robot is not in a climb zone
-     */
-    public BooleanSupplier isNotInClimbZone() {
-        return () -> {
-            Translation2d currTranslation = this.getState().Pose.getTranslation();
-
-            return currTranslation.getX() > 7.525 && currTranslation.getX() < 10.025;
-        };
     }
 
     /**
@@ -243,25 +174,28 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         field.setRobotPose(this.getState().Pose);
     }
 
-    /**
-     * Starts the simulation thread.
-     */
+    @SuppressWarnings("unchecked")
     private void startSimThread() {
-        this.lastSimTime = Utils.getCurrentTimeSeconds();
+        simSwerve = new MapleSimSwerveDrivetrain(
+            Seconds.of(SIM_LOOP_PERIOD_S),
+            Pounds.of(BOT_WEIGHT_LBS),
+            Inches.of(BOT_LENGTH_BUMPERS), // bumper length
+            Inches.of(BOT_WIDTH_BUMPERS), // bumper width
+            DCMotor.getKrakenX60(1), // drive motor type
+            DCMotor.getFalcon500(1), // steer motor type
+            WHEEL_COF, // wheel COF
+            getModuleLocations(),
+            getPigeon2(),
+            getModules(),
+            TunerConstants.FrontLeft,
+            TunerConstants.FrontRight,
+            TunerConstants.BackLeft,
+            TunerConstants.BackRight
+        );
 
-        /*
-         * Run simulation at a faster rate so PID gains behave more reasonably
-         */
-        this.simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - lastSimTime;
-            lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-
-        this.simNotifier.startPeriodic(SIM_LOOP_PERIOD);
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        simNotifier = new Notifier(simSwerve::update);
+        simNotifier.startPeriodic(SIM_LOOP_PERIOD_S);
     }
 
     /**
@@ -303,6 +237,24 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
     }
 
+    //TODO: Write method
+    public Trigger atStation() {
+        return null;
+    }
+
+    public Trigger atReef() {
+        return null;
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        if (this.simSwerve != null) {
+            simSwerve.mapleSimDrive.setSimulationWorldPose(pose);
+            Timer.delay(0.05); // Wait for simulation to update
+        }
+        super.resetPose(pose);
+    }
+
     /**
      * Gets the {@link Swerve} subsystem instance
      *
@@ -312,6 +264,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (system == null) {
             system = new Swerve(
                 TunerConstants.DrivetrainConstants,
+                100,
                 TunerConstants.FrontLeft,
                 TunerConstants.FrontRight,
                 TunerConstants.BackLeft,

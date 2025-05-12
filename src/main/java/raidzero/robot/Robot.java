@@ -8,19 +8,41 @@ import au.grapplerobotics.CanBridge;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import raidzero.lib.Elastic;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
 
     public Robot() {
+        Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+
+        if (isReal()) {
+            Logger.addDataReceiver(new WPILOGWriter());
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
+            setUseTiming(false);
+            String logPath = LogFileUtil.findReplayLog();
+            Logger.setReplaySource(new WPILOGReader(logPath));
+            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        }
+
+        Logger.start();
+
         m_robotContainer = new RobotContainer();
         CanBridge.runTCP();
 
@@ -44,8 +66,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledExit() {
-    }
+    public void disabledExit() {}
 
     @Override
     public void autonomousInit() {
@@ -62,8 +83,7 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {
-    }
+    public void autonomousExit() {}
 
     @Override
     public void teleopInit() {
@@ -78,8 +98,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {}
 
     @Override
-    public void teleopExit() {
-    }
+    public void teleopExit() {}
 
     @Override
     public void testInit() {
@@ -90,9 +109,13 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {}
 
     @Override
-    public void testExit() {
-    }
+    public void testExit() {}
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationInit() {}
+
+    @Override
+    public void simulationPeriodic() {
+        SimulatedArena.getInstance().simulationPeriodic();
+    }
 }

@@ -13,6 +13,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class LazyTalon {
     private TalonFX motor, follower;
     private int motorID;
@@ -24,11 +28,11 @@ public class LazyTalon {
 
     /**
      * Constructs a LazyTalon instance with the specified motor identifier and configuration parameters.
-     * 
+     *
      * <p>This constructor initializes the TalonFX motor controller with custom settings including sensor-to-mechanism
      * ratio, motor inversion, and current limits for both the stator and supply. These settings ensure the motor
      * behaves as expected for its role in robotic applications.
-     * 
+     *
      * @param motorID                 the unique identifier for the motor controller
      * @param sensorToMechanismRatio  the ratio used to convert sensor readings into mechanism movement units
      * @param invertedValue           the inversion configuration for the motor output, which determines the direction of rotation
@@ -75,7 +79,7 @@ public class LazyTalon {
 
     /**
      * Configures the LazyTalon with a CANCoder feedback sensor.
-     * 
+     *
      * <p>This method initializes and applies the CANCoder configuration including magnet offset and sensor direction,
      * sets up the remote sensor feedback for the motor controller, and enables method chaining by returning this instance.</p>
      *
@@ -161,6 +165,9 @@ public class LazyTalon {
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
 
+        motorConfiguration.MotionMagic.MotionMagicExpo_kA = a;
+        motorConfiguration.MotionMagic.MotionMagicExpo_kV = v;
+
         return this;
     }
 
@@ -241,16 +248,16 @@ public class LazyTalon {
      *
      * @param setpoint the target position setpoint for the motion magic control.
      */
-    public void moveTo(double setpoint) {
+    public void moveTo(Angle setpoint) {
         motor.setControl(new MotionMagicExpoVoltage(setpoint));
     }
 
     /**
      * Moves the motor at the specified velocity using a motion magic voltage profile.
-     * 
-     * @param velocity the target velocity for the motion magic control. 
+     *
+     * @param velocity the target velocity for the motion magic control.
      */
-    public void moveWithVelocity(double velocity) {
+    public void moveWithVelocity(AngularVelocity velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
     }
 
@@ -273,10 +280,10 @@ public class LazyTalon {
     /**
      * Retrieves the current feedback position of the motor.
      *
-     * @return the current motor position as a double. 
+     * @return the current motor position as a double.
      */
-    public double getFeedbackPosition() {
-        return motor.getPosition().getValueAsDouble();
+    public Angle getFeedbackPosition() {
+        return motor.getPosition().getValue();
     }
 
     /**
@@ -284,17 +291,17 @@ public class LazyTalon {
      *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackVelocity() {
-        return motor.getVelocity().getValueAsDouble();
+    public AngularVelocity getFeedbackVelocity() {
+        return motor.getVelocity().getValue();
     }
 
     /**
      * Retrives the current acceleration feedback from the motor.
-     * 
+     *
      * @return the current feedback velocity from the motor as a double.
      */
-    public double getFeedbackAcceleration() {
-        return motor.getAcceleration().getValueAsDouble();
+    public AngularAcceleration getFeedbackAcceleration() {
+        return motor.getAcceleration().getValue();
     }
 
     /**
