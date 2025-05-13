@@ -1,4 +1,4 @@
-package raidzero.lib;
+package raidzero.lib.wrappers;
 
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;

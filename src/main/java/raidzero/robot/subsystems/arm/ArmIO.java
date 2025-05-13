@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.sim.TalonFXSSimState;
 import edu.wpi.first.units.measure.Angle;
-import raidzero.lib.LazyFXS;
+import raidzero.lib.wrappers.LazyFXS;
 import raidzero.robot.Constants.Arm.DistalJoint;
 import raidzero.robot.Constants.Arm.ProximalJoint;
 import raidzero.robot.Constants.Arm.Wrist;

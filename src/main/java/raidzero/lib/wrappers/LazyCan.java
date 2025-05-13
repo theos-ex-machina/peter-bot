@@ -1,4 +1,4 @@
-package raidzero.lib;
+package raidzero.lib.wrappers;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
