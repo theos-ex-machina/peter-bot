@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
- * An interface for 
+ * I call it an interface for wrapping CTRE motors, rhymes with Grug
  * 
  * @param <T> is the motor ojbec to use
  * @param <S> is the sensor type value to use for CANcoders
