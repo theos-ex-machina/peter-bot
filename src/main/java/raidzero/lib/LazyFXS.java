@@ -1,6 +1,7 @@
 package raidzero.lib;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -18,7 +19,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class LazyFXS {
+public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceValue> {
     private TalonFXS motor, follower;
     private int motorID;
 
@@ -28,17 +29,14 @@ public class LazyFXS {
     private CANcoderConfiguration canCoderConfiguration;
 
     /**
-     * Constructs a LazyTalon instance with the specified motor identifier and configuration parameters.
-     *
-     * <p>This constructor initializes the TalonFX motor controller with custom settings including sensor-to-mechanism
-     * ratio, motor inversion, and current limits for both the stator and supply. These settings ensure the motor
-     * behaves as expected for its role in robotic applications.
-     *
-     * @param motorID                 the unique identifier for the motor controller
-     * @param sensorToMechanismRatio  the ratio used to convert sensor readings into mechanism movement units
-     * @param invertedValue           the inversion configuration for the motor output, which determines the direction of rotation
-     * @param statorCurrentLimit      the maximum allowable current for the stator
-     * @param supplyCurrentLimit      the maximum allowable current from the power supply
+     * Constructs a LazyFXS instance with the specified motor configurations
+     * 
+     * @param motorID the device id of the motor controller
+     * @param motorArrangement what type of motor the FXS is connected to
+     * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) * planetary product)
+     * @param invertedValue what direction that is positive for the motor
+     * @param statorCurrentLimit the maximum stator current
+     * @param supplyCurrentLimit the maximum supply current
      */
     public LazyFXS(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
@@ -56,18 +54,7 @@ public class LazyFXS {
         motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    /**
-     * Configures a follower TalonFX for this LazyTalon.
-     *
-     * <p>This method creates a new TalonFX follower with the specified follower device ID,
-     * applies a default configuration to it, and sets the follower control mode relative
-     * to the master motor (represented by motorID). The follower's inversion state is also
-     * configured based on the provided flag.
-     *
-     * @param followerID the device ID of the follower TalonFX
-     * @param isInverted if true, the follower output is inverted relative to the master
-     * @return this LazyTalon instance for method chaining
-     */
+    @Override
     public LazyFXS withFollower(int followerID, boolean isInverted) {
         followConfiguration = new TalonFXSConfiguration();
 
@@ -78,18 +65,7 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Configures the LazyTalon with a CANCoder feedback sensor.
-     *
-     * <p>This method initializes and applies the CANCoder configuration including magnet offset and sensor direction,
-     * sets up the remote sensor feedback for the motor controller, and enables method chaining by returning this instance.</p>
-     *
-     * @param CANCoderID      the unique identifier of the CANCoder device.
-     * @param sensorType      the type of sensor used for feedback.
-     * @param magnetOffset    the magnet offset value applied to the sensor.
-     * @param sensorDirection the sensor direction relative to the motor.
-     * @return                this LazyTalon instance with the updated configuration.
-     */
+    @Override
     public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
         canCoderConfiguration = new CANcoderConfiguration();
         canCoderConfiguration.MagnetSensor.MagnetOffset = magnetOffset;
@@ -104,23 +80,7 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Configures the CANCoder sensor with extended parameters and applies the configuration.
-     *
-     * <p>
-     * This method delegates the basic CANCoder configuration to an overloaded method that handles the CANCoder ID,
-     * sensor type, magnet offset, and sensor direction. After the basic configuration, it sets the absolute sensor
-     * discontinuity point to handle wrap-around behavior before applying the complete configuration using the
-     * device's configurator.
-     * </p>
-     *
-     * @param CANCoderID the unique identifier of the CANCoder on the CAN bus.
-     * @param sensorType the type of feedback sensor used, specified by a FeedbackSensorSourceValue.
-     * @param magnetOffset the offset to be applied to the magnet sensor's position.
-     * @param sensorDirection the direction setting for the sensor, specified by a SensorDirectionValue.
-     * @param discontinuityPoint the point at which the sensor's absolute measurement wraps around.
-     * @return the current instance of LazyTalon to allow for method chaining.
-     */
+    @Override
     public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, sensorType, magnetOffset, sensorDirection);
 
@@ -132,27 +92,7 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Configures the motion magic parameters for this LazyTalon instance.
-     *
-     * <p>This method sets up the PIDF gains and motion magic parameters for controlling
-     * the motor's movement using motion profiling. Specifically, it assigns the proportional,
-     * integral, derivative, static, gravity, velocity, and acceleration gains for the PID controller,
-     * as well as the motion magic cruise velocity and maximum acceleration values. The gravity type
-     * is also specified.
-     *
-     * @param p the proportional gain (kP)
-     * @param i the integral gain (kI)
-     * @param d the derivative gain (kD)
-     * @param s the static gain (kS)
-     * @param g the gravity gain (kG)
-     * @param v the velocity gain (kV)
-     * @param a the acceleration gain (kA)
-     * @param gravityType the gravity type configuration for the motor
-     * @param cruiseVelocity the cruise velocity for motion magic mode
-     * @param maxAcceleration the maximum acceleration for motion magic mode
-     * @return the current instance of LazyTalon with updated motion magic configuration, enabling method chaining
-     */
+    @Override
     public LazyFXS withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.Slot0.kP = p;
         motorConfiguration.Slot0.kI = i;
@@ -172,32 +112,14 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Applies a custom configuration to this TalonFX motor controller.
-     * <p>
-     * This method sets the motor configuration to the provided {@link TalonFXConfiguration}
-     * instance and returns the current instance of LazyTalon to enable method chaining.
-     *
-     * @param configuration the TalonFXConfiguration to be applied to the motor
-     * @return the current instance of LazyTalon with the updated configuration
-     */
-    public LazyFXS withCustomConfiguration(TalonFXSConfiguration configuration) {
-        motorConfiguration = configuration;
+    @Override
+    public LazyFXS withCustomConfiguration(ParentConfiguration configuration) {
+        motorConfiguration = (TalonFXSConfiguration) configuration;
 
         return this;
     }
 
-    /**
-     * Configures the hardware limit switch settings for the motor.
-     *
-     * <p>This method updates the forward and reverse limit switch configuration using the provided parameters.
-     *
-     * @param ForwardLimitAutosetPositionEnable  if true, enables automatic setting of the forward limit switch position.
-     * @param ForwardLimitAutosetPositionValue   the position value to be used for the forward limit switch.
-     * @param reverseLimitAutosetPositionEnable  if true, enables automatic setting of the reverse limit switch position.
-     * @param reverseLimitAutosetPositionValue   the position value to be used for the reverse limit switch.
-     * @return this LazyTalon instance with the updated limit switch configuration.
-     */
+    @Override
     public LazyFXS withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
@@ -210,18 +132,7 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Configures the forward and reverse soft limits for the motor.
-     *
-     * <p>This method enables or disables the software limit switches for both the forward and
-     * reverse directions and sets their respective threshold values.
-     *
-     * @param forwardSoftLimitEnable true to enable the forward soft limit; false to disable it.
-     * @param forwardSoftLimit the threshold value for the forward soft limit.
-     * @param reverseSoftLimitEnable true to enable the reverse soft limit; false to disable it.
-     * @param reverseSoftLimit the threshold value for the reverse soft limit.
-     * @return the current instance of LazyTalon with updated soft limit settings.
-     */
+    @Override
     public LazyFXS withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
@@ -232,106 +143,64 @@ public class LazyFXS {
         return this;
     }
 
-    /**
-     * Applies the motor configuration to the motor configurator and returns the current
-     * instance of LazyTalon.
-     *
-     * @return this LazyTalon instance for method chaining.
-     */
+    @Override
     public LazyFXS build() {
         motor.getConfigurator().apply(motorConfiguration);
 
         return this;
     }
 
-    /**
-     * Moves the motor to the specified position using a motion magic expo voltage profile.
-     *
-     * @param setpoint the target position setpoint for the motion magic control.
-     */
+    @Override
     public void moveTo(Angle setpoint) {
         motor.setControl(new MotionMagicExpoVoltage(setpoint));
     }
 
-    /**
-     * Moves the motor at the specified velocity using a motion magic voltage profile.
-     *
-     * @param velocity the target velocity for the motion magic control.
-     */
+    @Override
     public void moveWithVelocity(AngularVelocity velocity) {
         motor.setControl(new MotionMagicVelocityVoltage(velocity));
     }
 
+    @Override
     public void set(double speed) {
         motor.set(speed);
     }
 
-    /**
-     * Stops the motor
-     */
+    @Override
     public void stop() {
         motor.stopMotor();
     }
 
-    /**
-     * Sets the neutral mode for the motor.
-     *
-     * @param newNeutralModeValue the neutral mode to be applied to the motor
-     */
+    @Override
     public void setNeutralMode(NeutralModeValue newNeutralModeValue) {
         motor.setNeutralMode(newNeutralModeValue);
     }
 
-    /**
-     * Retrieves the current feedback position of the motor.
-     *
-     * @return the current motor position as a double.
-     */
+    @Override
     public Angle getFeedbackPosition() {
         return motor.getPosition().getValue();
     }
 
-    /**
-     * Retrieves the current velocity feedback from the motor.
-     *
-     * @return the current feedback velocity from the motor as a double.
-     */
+    @Override
     public AngularVelocity getFeedbackVelocity() {
         return motor.getVelocity().getValue();
     }
 
-    /**
-     * Retrives the current acceleration feedback from the motor.
-     *
-     * @return the current feedback velocity from the motor as a double.
-     */
+    @Override
     public AngularAcceleration getFeedbackAcceleration() {
         return motor.getAcceleration().getValue();
     }
 
-    /**
-     * Retrieves the TalonFX motor instance.
-     *
-     * @return the TalonFX object associated with this instance.
-     */
+    @Override
     public TalonFXS getMotor() {
         return motor;
     }
 
-    /**
-     * Retrieves the CANcoder instance.
-     *
-     * @return the CANcoder instance associated with this object
-     */
+    @Override
     public CANcoder getCanCoder() {
         return canCoder;
     }
 
-    /**
-     * Retrieves the follower TalonFX instance.
-     *
-     * @return the follower TalonFX used for motor control.
-     */
+    @Override
     public TalonFXS getFollower() {
         return follower;
     }

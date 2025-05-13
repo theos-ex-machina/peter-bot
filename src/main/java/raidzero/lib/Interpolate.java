@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-
 public class Interpolate<T> extends Command {
     private final List<T> path;
     private final double segmentTime;
@@ -59,7 +58,6 @@ public class Interpolate<T> extends Command {
         double t = Math.min(elapsed / segmentTime, 1.0);
 
         T interpolatedPose = this.interpolator.interpolate(start, end, t);
-
         poseConsumer.accept(interpolatedPose);
 
         if (t >= 1.0) {
@@ -90,6 +88,6 @@ public class Interpolate<T> extends Command {
     };
 
     public static PointInterpolator<Angle> angleInterpolator = (startAngle, endAngle, t) -> {
-    return  startAngle.plus(endAngle.minus(startAngle).times(t));
+        return startAngle.plus(endAngle.minus(startAngle).times(t));
     };
 }
