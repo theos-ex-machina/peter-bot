@@ -39,12 +39,10 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import raidzero.robot.Constants.Swerve.Setpoints;
-import raidzero.robot.RobotContainer;
 import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -144,6 +142,12 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      */
     public Command goToNearestReef(int level) {
         return new GoToNearestReef(level, system);
+    }
+
+    public Command goToNearestStation(int level) {
+        return defer(() -> {
+            return this.goToPose(this.getState().Pose.nearest(Setpoints.STATION_WAYPOINTS));
+        });
     }
 
     /**
@@ -249,6 +253,35 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public void initializeOtf() {
         if ((DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) && !waypointsTransformed) {
             waypointsTransformed = true;
+
+            transformWaypointsForAlliance(Setpoints.LEFT_REEF_WAYPOINTS); 
+            transformWaypointsForAlliance(Setpoints.RIGHT_REEF_WAYPOINTS);
+            transformWaypointsForAlliance(Setpoints.STATION_WAYPOINTS);
+        }
+    }
+
+    /**
+     * <ul>
+     * <li>Transforms each waypoint in the provided list for the red alliance
+     * <li><b><em>This method modifies the points within the list
+     * </ul>
+     *
+     * @param waypoints The list of Pose2d waypoints (defined in blue origin coordinates)
+     */
+    private void transformWaypointsForAlliance(List<Pose2d> waypoints) {
+        final double FIELD_LENGTH = 17.55;
+        final double X_OFFSET = 0.0;
+
+        for (int i = 0; i < waypoints.size(); i++) {
+            Pose2d bluePose = waypoints.get(i);
+            waypoints.set(
+                i,
+                new Pose2d(
+                    FIELD_LENGTH - bluePose.getX() + X_OFFSET,
+                    bluePose.getY(),
+                    Rotation2d.fromDegrees(180 - bluePose.getRotation().getDegrees())
+                )
+            );
         }
     }
 

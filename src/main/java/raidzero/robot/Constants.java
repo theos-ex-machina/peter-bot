@@ -264,8 +264,8 @@ public class Constants {
             );
 
             public static final List<Pose2d> ALL_REEFS = new ArrayList<Pose2d>() {{
-                addAll(LEFT_REEF_WAYPOINTS);
                 addAll(RIGHT_REEF_WAYPOINTS);
+                addAll(LEFT_REEF_WAYPOINTS);
             }};
 
             public static final Pose2d BLUE_PROCESSOR = new Pose2d(5.987542, 0.78, Rotation2d.fromDegrees(90));
