@@ -1,7 +1,10 @@
 package raidzero.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Seconds;
 import static raidzero.robot.Constants.Simulation.*;
 
@@ -16,7 +19,10 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -36,7 +42,10 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.List;
 import java.util.function.Supplier;
+
+import raidzero.robot.Constants.Swerve.Setpoints;
 import raidzero.robot.subsystems.drivetrain.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -127,6 +136,57 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 )
             ).finallyDo((interrupted) -> this.stop())
         );
+    }
+
+    /**
+     * Finds and paths to the nearest reef waypoint
+     * 
+     * @return a {@link Command}
+     */
+    public Command goToNearestReef() {
+        Translation2d currentPosition = this.getState().Pose.getTranslation();
+
+        List<Pose2d> reefWaypoints = Setpoints.RIGHT_REEF_WAYPOINTS;
+        reefWaypoints.addAll(Setpoints.LEFT_REEF_WAYPOINTS);
+
+        Pose2d nearestReef = Setpoints.RIGHT_REEF_WAYPOINTS.get(0);
+        double nearestReefDistance = currentPosition.getDistance(nearestReef.getTranslation());
+
+        for (int i = 1; i < reefWaypoints.size(); i++) {
+            double distance = currentPosition.getDistance(reefWaypoints.get(i).getTranslation());
+
+            if (distance < nearestReefDistance) {
+                nearestReef = reefWaypoints.get(i);
+                nearestReefDistance = distance;
+            }
+        }
+
+        return goToPose(nearestReef);
+    }
+
+    /**
+     * Finds and paths to the nearest station waypoint
+     * 
+     * @return a {@link Command}
+     */
+    public Command goToNearestSation() {
+        Translation2d currentPosition = this.getState().Pose.getTranslation();
+
+        List<Pose2d> stationWaypoints = Setpoints.STATION_WAYPOINTS;
+
+        Pose2d nearestStation = Setpoints.RIGHT_REEF_WAYPOINTS.get(0);
+        double nearestStationDistance = currentPosition.getDistance(nearestStation.getTranslation());
+
+        for (int i = 1; i < stationWaypoints.size(); i++) {
+            double distance = currentPosition.getDistance(stationWaypoints.get(i).getTranslation());
+
+            if (distance < nearestStationDistance) {
+                nearestStation = stationWaypoints.get(i);
+                nearestStationDistance = distance;
+            }
+        }
+
+        return goToPose(nearestStation);
     }
 
     /**
@@ -237,13 +297,36 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
     }
 
-    //TODO: Write method
     public Trigger atStation() {
-        return null;
+        return atSetpoint(Setpoints.STATION_WAYPOINTS.get(0))
+            .or(atSetpoint(Setpoints.STATION_WAYPOINTS.get(1)));
     }
 
     public Trigger atReef() {
-        return null;
+        return atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(0))
+            .or(atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(1)))
+            .or(atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(2)))
+            .or(atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(3)))
+            .or(atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(4)))
+            .or(atSetpoint(Setpoints.LEFT_REEF_WAYPOINTS.get(5)))
+
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(0)))
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(1)))
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(2)))
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(3)))
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(4)))
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(5)));
+    }
+
+    private Trigger atSetpoint(Pose2d setpoint) {
+        Pose2d currentPose = this.getState().Pose;
+        double distance = currentPose.getTranslation().getDistance(setpoint.getTranslation());
+        double rotationError = Math.abs(currentPose.getRotation().minus(setpoint.getRotation()).getDegrees());
+
+        return new Trigger(
+            () -> rotationError < Setpoints.ROTATION_ERROR_TOLERANCE.in(Degrees) &&
+                distance < Setpoints.SETPOINT_TOLERANCE.in(Meters)
+        );
     }
 
     @Override

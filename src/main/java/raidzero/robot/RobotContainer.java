@@ -106,10 +106,10 @@ public class RobotContainer {
 
         // has coral but not there yet
         L4.and(intake.hasCoral()).and(swerve.atReef().negate())
-            .whileTrue(swerve.goToPose(Setpoints.RIGHT_REEF_WAYPOINTS.get(0)));
+            .whileTrue(swerve.goToNearestReef());
 
         // has coral and there but no arm
-        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atHome().negate())
+        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4().negate())
             .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
         // has coral, there and arm
@@ -118,7 +118,7 @@ public class RobotContainer {
 
         // no coral but wants some
         STATION.and(intake.hasCoral().negate()).and(swerve.atStation().negate())
-            .whileTrue(swerve.goToPose(Setpoints.STATION_WAYPOINTS.get(0)));
+            .whileTrue(swerve.goToNearestSation());
         
         // there but no arm
         STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation().negate())
