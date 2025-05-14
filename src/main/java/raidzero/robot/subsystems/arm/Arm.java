@@ -118,46 +118,101 @@ public class Arm extends SubsystemBase {
         return new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the L4 position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL4() {
         return atSetpoint(Positions.L4, Positions.L4_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the L3 position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL3() {
         return atSetpoint(Positions.L3, Positions.L3_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the L2 position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL2() {
         return atSetpoint(Positions.L2, Positions.L2_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the L1 position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL1() {
         return atSetpoint(Positions.L1, Positions.L1_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the station position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atStation() {
         return atSetpoint(Positions.STATION, Positions.STATION_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the ground intake position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atGroundIntake() {
         return atSetpoint(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the l3 algae position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL3Algae() {
         return atSetpoint(Positions.L3, Positions.L3_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the L2 algae position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atL2Algae() {
         return atSetpoint(Positions.L2, Positions.L2_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the barge position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atBarge() {
         return atSetpoint(Positions.BARGE, Positions.BARGE_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the processor position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atProcessor() {
         return atSetpoint(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE);
     }
 
+    /**
+     * Creates a {@link Trigger} object that is activated if the arm is at the home position
+     * 
+     * @return the Trigger object
+     */
     public Trigger atHome() {
         return atSetpoint(new Angle[] { Rotations.of(0.25), Rotations.of(0.0) }, Rotations.of(0.0));
     }
