@@ -25,15 +25,11 @@ public class GoToNearestReef extends Command {
 
     @Override
     public void initialize() {
-        List<Pose2d> allReefs = new ArrayList<Pose2d>();
-        allReefs.addAll(Setpoints.RIGHT_REEF_WAYPOINTS);
-        allReefs.addAll(Setpoints.RIGHT_REEF_WAYPOINTS);
-
         List<Pose2d> avalibleReefs = new ArrayList<Pose2d>();
 
-        for (int i = 0; i < allReefs.size(); i++) {
+        for (int i = 0; i < Setpoints.ALL_REEFS.size(); i++) {
             if (RobotContainer.reef[i][level - 1] == false) {
-                avalibleReefs.add(allReefs.get(i));
+                avalibleReefs.add(Setpoints.ALL_REEFS.get(i));
             }
         }
 
