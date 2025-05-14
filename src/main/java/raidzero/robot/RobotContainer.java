@@ -22,7 +22,6 @@ import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.subsystems.drivetrain.Limelight;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
-import raidzero.robot.Constants.Swerve.Setpoints;
 
 import static raidzero.robot.Constants.Bindings.*;
 
