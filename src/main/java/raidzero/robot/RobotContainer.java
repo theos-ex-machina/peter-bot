@@ -47,6 +47,8 @@ public class RobotContainer {
 
     public final SendableChooser<Command> autoChooser;
 
+    public static boolean[][] reef = new boolean[16][4];
+
     /**
      * Constructs a {@link RobotContainer} instance
      */
@@ -105,7 +107,7 @@ public class RobotContainer {
 
         // has coral but not there yet
         L4.and(intake.hasCoral()).and(swerve.atReef().negate())
-            .whileTrue(swerve.goToNearestReef());
+            .whileTrue(swerve.goToNearestReef(4));
 
         // has coral and there but no arm
         L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4().negate())

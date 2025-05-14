@@ -140,25 +140,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      * 
      * @return a {@link Command}
      */
-    public Command goToNearestReef() {
-        Translation2d currentPosition = this.getState().Pose.getTranslation();
-
-        List<Pose2d> reefWaypoints = Setpoints.RIGHT_REEF_WAYPOINTS;
-        reefWaypoints.addAll(Setpoints.LEFT_REEF_WAYPOINTS);
-
-        Pose2d nearestReef = Setpoints.RIGHT_REEF_WAYPOINTS.get(0);
-        double nearestReefDistance = currentPosition.getDistance(nearestReef.getTranslation());
-
-        for (int i = 1; i < reefWaypoints.size(); i++) {
-            double distance = currentPosition.getDistance(reefWaypoints.get(i).getTranslation());
-
-            if (distance < nearestReefDistance) {
-                nearestReef = reefWaypoints.get(i);
-                nearestReefDistance = distance;
-            }
-        }
-
-        return goToPose(nearestReef);
+    public Command goToNearestReef(int level) {
+        return new GoToNearestReef(level, system);
     }
 
     /**
