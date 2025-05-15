@@ -191,15 +191,18 @@ public class Constants {
         public static Trigger L3 = operator.button(8);
         public static Trigger L4 = operator.button(9);
 
+        public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
+        public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
+
         /** Button labeled "home" */
         public static Trigger STATION = operator.button(12);
         /** Button labeled "bottom right" */
-        public static Trigger GROUND_INTAKE = operator.button(14); // Bottom right
+        public static Trigger GROUND_INTAKE = operator.button(14);
 
         /** Button labeled "bottom left" */
-        public static Trigger PROCESSOR = operator.button(15); // bottom left
+        public static Trigger PROCESSOR = operator.button(15);
         /** Button labeled "top left" */
-        public static Trigger BARGE = operator.button(16); // top left
+        public static Trigger BARGE = operator.button(16);
 
         public static Trigger CORAL_INTAKE = operator.button(11);
         public static Trigger CORAL_EXTAKE = operator.button(10);
@@ -207,8 +210,6 @@ public class Constants {
         public static Trigger ALGAE_INTAKE = operator.button(4);
         public static Trigger ALGAE_EXTAKE = operator.button(5);
 
-        public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
-        public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
     }
 
     public static class Simulation {

@@ -19,7 +19,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -144,35 +143,34 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         return new GoToNearestReef(level, system);
     }
 
-    public Command goToNearestStation(int level) {
+    public Command goToNearestStation() {
         return defer(() -> {
             return this.goToPose(this.getState().Pose.nearest(Setpoints.STATION_WAYPOINTS));
         });
     }
 
     /**
-     * Finds and paths to the nearest station waypoint
-     * 
+     * TODO: do this method
      * @return a {@link Command}
      */
-    public Command goToNearestSation() {
-        Translation2d currentPosition = this.getState().Pose.getTranslation();
+    public Command goToNearestL2Algae() {
+        return null;
+    }
 
-        List<Pose2d> stationWaypoints = Setpoints.STATION_WAYPOINTS;
+    /**
+     * TODO: do this method
+     * @return a {@link Command}
+     */
+    public Command goToNearestL3Algae() {
+        return null;
+    }
 
-        Pose2d nearestStation = Setpoints.RIGHT_REEF_WAYPOINTS.get(0);
-        double nearestStationDistance = currentPosition.getDistance(nearestStation.getTranslation());
-
-        for (int i = 1; i < stationWaypoints.size(); i++) {
-            double distance = currentPosition.getDistance(stationWaypoints.get(i).getTranslation());
-
-            if (distance < nearestStationDistance) {
-                nearestStation = stationWaypoints.get(i);
-                nearestStationDistance = distance;
-            }
-        }
-
-        return goToPose(nearestStation);
+    /**
+     * TODO: do this method
+     * @return
+     */
+    public Command goToProcessor() {
+        return null;
     }
 
     /**
@@ -330,7 +328,33 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(2)))
             .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(3)))
             .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(4)))
-            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(5)));
+            .or(atSetpoint(Setpoints.RIGHT_REEF_WAYPOINTS.get(5)))
+            .or(atL2Algae())
+            .or(atL3Algae());
+    }
+
+    /**
+     * TODO: make this method
+     * @return
+     */
+    public Trigger atL2Algae() {
+        return null;
+    }
+
+    /**
+     * TODO: do this method
+     * @return
+     */
+    public Trigger atL3Algae() {
+        return null;
+    }
+
+    /**
+     * TODO: do this method
+     * @return
+     */
+    public Trigger atProcessor() {
+        return null;
     }
 
     private Trigger atSetpoint(Pose2d setpoint) {
@@ -372,4 +396,5 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         return system;
     }
+
 }

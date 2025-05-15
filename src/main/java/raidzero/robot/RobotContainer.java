@@ -23,7 +23,7 @@ import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
 import static raidzero.robot.Constants.Bindings.*;
-import static raidzero.robot.Superstructure.*;
+import static raidzero.robot.subsystems.Superstructure.*;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -107,29 +107,49 @@ public class RobotContainer {
         intake.hasCoral().onFalse(arm.home());
         intake.hasAlgae().onFalse(arm.home());
 
-        // has coral but not there yet
-        L4.and(DRIVER_WANTS_CONTROL.negate()).and(WITH_CORAL_READY_REEF)
+        L4.and(DRIVER_WANTS_CONTROL.negate()).and(READY_FOR_REEF)
             .whileTrue(swerve.goToNearestReef(4));
 
-        // has coral and there but no arm
         L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ARM)
             .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
-        // has coral, there and arm
-        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_EXTAKE)
+        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ROLLERS)
             .whileTrue(intake.extakeCoral());
 
-        // no coral but wants some
-        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(WANTS_CORAL)
-            .whileTrue(swerve.goToNearestSation());
+        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(WANTS_GAMEPEICE)
+            .whileTrue(swerve.goToNearestStation());
 
-        // there but no arm
         STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_ARM)
             .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
 
-        // has arm
         STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_INTAKE)
             .whileTrue(intake.intakeCoral());
+
+        // allow driver movment for ground intake
+        GROUND_INTAKE.and(WANTS_GAMEPEICE)
+            .whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+
+        //TODO: Add autopath logic to ground intake
+        GROUND_INTAKE.and(AT_GROUND_READY_INTAKE)
+            .whileTrue(intake.intakeCoral());
+
+        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(READY_FOR_REEF)
+            .whileTrue(swerve.goToNearestL2Algae());
+
+        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ARM)
+            .whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+
+        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ROLLERS)
+            .whileTrue(intake.intakeAlgae());
+
+        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(HAS_ALGAE)
+            .whileTrue(swerve.goToProcessor());
+
+        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(AT_PROCESSOR_READY_ARM)
+            .whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
+
+        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(AT_PROCESSOR_READY_ROLLERS)
+            .whileTrue(intake.extakeAlgae());
 
         swerve.registerTelemetry(logger::telemeterize);
     }
