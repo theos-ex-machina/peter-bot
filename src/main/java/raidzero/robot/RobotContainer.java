@@ -26,22 +26,17 @@ import raidzero.robot.subsystems.drivetrain.TunerConstants;
 import static raidzero.robot.Constants.Bindings.*;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric fieldCentricDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
-
     public final Swerve swerve = Swerve.system();
     public final Limelight limes = Limelight.system();
-
     public final Arm arm = Arm.system();
     public final Intake intake = Intake.system();
 
@@ -69,9 +64,18 @@ public class RobotContainer {
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
-                    .withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+            )
+        );
+
+        DRIVER_WANTS_CONTROL.whileTrue(
+            swerve.applyRequest(
+                () -> fieldCentricDrive
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
             )
         );
 
@@ -106,27 +110,27 @@ public class RobotContainer {
         intake.hasAlgae().onFalse(arm.home());
 
         // has coral but not there yet
-        L4.and(intake.hasCoral()).and(swerve.atReef().negate())
+        L4.and(intake.hasCoral()).and(swerve.atReef().negate()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(swerve.goToNearestReef(4));
 
         // has coral and there but no arm
-        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4().negate())
+        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4().negate()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
         // has coral, there and arm
-        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4())
+        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(intake.extakeCoral());
 
         // no coral but wants some
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation().negate())
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation().negate()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(swerve.goToNearestSation());
-        
+
         // there but no arm
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation().negate())
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation().negate()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
-        
+
         // has arm
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation())
+        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation()).and(DRIVER_WANTS_CONTROL.negate())
             .whileTrue(intake.intakeCoral());
 
         swerve.registerTelemetry(logger::telemeterize);

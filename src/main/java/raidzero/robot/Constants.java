@@ -14,6 +14,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.ArrayList;
@@ -173,30 +174,39 @@ public class Constants {
     }
 
     public static class Bindings {
+        public static final int DRIVER_PORT = 0;
+        public static CommandXboxController driver = new CommandXboxController(0);
+
+        /** If the driver pulls any of the sticks */
+        public static Trigger DRIVER_WANTS_CONTROL = driver.axisGreaterThan(0, 0.1)
+            .or(driver.axisGreaterThan(1, 0.1))
+            .or(driver.axisGreaterThan(4, 0.1))
+            .or(driver.axisGreaterThan(5, 0.1));
+
         public static final int OPERATOR_PORT = 1;
         public static CommandGenericHID operator = new CommandGenericHID(OPERATOR_PORT);
 
-        // same as before
         public static Trigger L1 = operator.button(6);
         public static Trigger L2 = operator.button(7);
         public static Trigger L3 = operator.button(8);
         public static Trigger L4 = operator.button(9);
 
-        public static Trigger STATION = operator.button(12); // "home" labelled button
+        /** Button labeled "home" */
+        public static Trigger STATION = operator.button(12);
+        /** Button labeled "bottom right" */
         public static Trigger GROUND_INTAKE = operator.button(14); // Bottom right
 
+        /** Button labeled "bottom left" */
         public static Trigger PROCESSOR = operator.button(15); // bottom left
+        /** Button labeled "top left" */
         public static Trigger BARGE = operator.button(16); // top left
 
-        // Same as before
         public static Trigger CORAL_INTAKE = operator.button(11);
         public static Trigger CORAL_EXTAKE = operator.button(10);
 
-        // Same as before
         public static Trigger ALGAE_INTAKE = operator.button(4);
         public static Trigger ALGAE_EXTAKE = operator.button(5);
 
-        // Axis buttons next to algae shit
         public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
         public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
     }
@@ -263,10 +273,12 @@ public class Constants {
                 )
             );
 
-            public static final List<Pose2d> ALL_REEFS = new ArrayList<Pose2d>() {{
-                addAll(RIGHT_REEF_WAYPOINTS);
-                addAll(LEFT_REEF_WAYPOINTS);
-            }};
+            public static final List<Pose2d> ALL_REEFS = new ArrayList<Pose2d>() {
+                {
+                    addAll(RIGHT_REEF_WAYPOINTS);
+                    addAll(LEFT_REEF_WAYPOINTS);
+                }
+            };
 
             public static final Pose2d BLUE_PROCESSOR = new Pose2d(5.987542, 0.78, Rotation2d.fromDegrees(90));
             public static final Pose2d RED_PROCESSOR = new Pose2d(17.55 - 5.987542, 8.05 - 0.78, Rotation2d.fromDegrees(180));
