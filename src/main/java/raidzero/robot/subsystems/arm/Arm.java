@@ -86,17 +86,20 @@ public class Arm extends SubsystemBase {
 
         double r = Math.sqrt(x * x + y * y);
 
+        double proximalLength = ProximalJoint.LENGTH.in(Meters);
+        double distalLength = DistalJoint.LENGTH.in(Meters);
+
         double cosTheta2 = Math.max(
             -1, Math.min(
-                1, (r * r - ProximalJoint.LENGTH * ProximalJoint.LENGTH - DistalJoint.LENGTH * DistalJoint.LENGTH) /
-                    (2 * ProximalJoint.LENGTH * DistalJoint.LENGTH)
+                1, (r * r - proximalLength * proximalLength - distalLength * distalLength) /
+                    (2 * proximalLength * distalLength)
             )
         );
         double theta2 = Math.acos(cosTheta2);
 
         double theta1 = Math.atan2(x, y) - Math.atan2(
-            DistalJoint.LENGTH * Math.sin(theta2),
-            ProximalJoint.LENGTH + DistalJoint.LENGTH * Math.cos(theta2)
+            distalLength * Math.sin(theta2),
+            proximalLength + distalLength * Math.cos(theta2)
         );
 
         return new Angle[] { Radians.of(theta1), Radians.of(theta2) };
@@ -112,8 +115,11 @@ public class Arm extends SubsystemBase {
         double theta1 = jointAngles[0].in(Radians);
         double theta2 = jointAngles[1].in(Radians);
 
-        double x = ProximalJoint.LENGTH * Math.sin(theta1) + DistalJoint.LENGTH * Math.sin(theta1 + theta2);
-        double y = ProximalJoint.LENGTH * Math.cos(theta1) + DistalJoint.LENGTH * Math.cos(theta1 + theta2);
+        double proximalLength = ProximalJoint.LENGTH.in(Meters);
+        double distalLength = DistalJoint.LENGTH.in(Meters);
+
+        double x = proximalLength * Math.sin(theta1) + distalLength * Math.sin(theta1 + theta2);
+        double y = proximalLength * Math.cos(theta1) + distalLength * Math.cos(theta1 + theta2);
 
         return new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
     }

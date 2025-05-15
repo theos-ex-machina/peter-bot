@@ -52,7 +52,7 @@ public class Constants {
             public static final double CRUISE_VELOCITY = 1.0;
             public static final double ACCELERATION = 1.0;
 
-            public static final double LENGTH = 1.0;
+            public static final Distance LENGTH = Meters.of(1.0);
         }
 
         public static class DistalJoint {
@@ -78,7 +78,7 @@ public class Constants {
             public static final double CRUISE_VELOCITY = 1.0;
             public static final double ACCELERATION = 1.0;
 
-            public static final double LENGTH = 1.0;
+            public static final Distance LENGTH = Meters.of(1.0);
         }
 
         public static class Wrist {

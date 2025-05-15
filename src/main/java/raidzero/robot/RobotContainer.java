@@ -15,7 +15,6 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import raidzero.robot.Constants.Arm.Positions;
 import raidzero.robot.subsystems.arm.Arm;
 import raidzero.robot.subsystems.arm.Intake;
@@ -24,6 +23,7 @@ import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
 import static raidzero.robot.Constants.Bindings.*;
+import static raidzero.robot.Superstructure.*;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -48,13 +48,11 @@ public class RobotContainer {
      * Constructs a {@link RobotContainer} instance
      */
     public RobotContainer() {
-        registerPathplannerCommands();
-
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("AutoChooser", autoChooser);
+        PathfindingCommand.warmupCommand().schedule();
 
         configureBindings();
-        PathfindingCommand.warmupCommand().schedule();
     }
 
     /**
@@ -110,36 +108,31 @@ public class RobotContainer {
         intake.hasAlgae().onFalse(arm.home());
 
         // has coral but not there yet
-        L4.and(intake.hasCoral()).and(swerve.atReef().negate()).and(DRIVER_WANTS_CONTROL.negate())
+        L4.and(DRIVER_WANTS_CONTROL.negate()).and(WITH_CORAL_READY_REEF)
             .whileTrue(swerve.goToNearestReef(4));
 
         // has coral and there but no arm
-        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4().negate()).and(DRIVER_WANTS_CONTROL.negate())
+        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ARM)
             .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
         // has coral, there and arm
-        L4.and(intake.hasCoral()).and(swerve.atReef()).and(arm.atL4()).and(DRIVER_WANTS_CONTROL.negate())
+        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_EXTAKE)
             .whileTrue(intake.extakeCoral());
 
         // no coral but wants some
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation().negate()).and(DRIVER_WANTS_CONTROL.negate())
+        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(WANTS_CORAL)
             .whileTrue(swerve.goToNearestSation());
 
         // there but no arm
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation().negate()).and(DRIVER_WANTS_CONTROL.negate())
+        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_ARM)
             .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
 
         // has arm
-        STATION.and(intake.hasCoral().negate()).and(swerve.atStation()).and(arm.atStation()).and(DRIVER_WANTS_CONTROL.negate())
+        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_INTAKE)
             .whileTrue(intake.intakeCoral());
 
         swerve.registerTelemetry(logger::telemeterize);
     }
-
-    /**
-     * Registers PathPlanner commands
-     */
-    private void registerPathplannerCommands() {}
 
     /**
      * Returns the selected autonomous command
