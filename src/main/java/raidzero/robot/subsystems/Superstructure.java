@@ -1,5 +1,6 @@
 package raidzero.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import raidzero.robot.subsystems.arm.Arm;
 import raidzero.robot.subsystems.arm.Intake;
@@ -50,4 +51,17 @@ public class Superstructure {
     public static Trigger AT_PROCESSOR_READY_ROLLERS = intake.hasAlgae()
         .and(swerve.atProcessor())
         .and(arm.atProcessor());
+
+    public static void updateTelemetry() {
+        SmartDashboard.putBoolean("Ready for reef", READY_FOR_REEF.getAsBoolean());
+        SmartDashboard.putBoolean("At reef; ready for arm", AT_REEF_READY_ARM.getAsBoolean());
+        SmartDashboard.putBoolean("At reef with arm; ready for rollers", AT_REEF_READY_ROLLERS.getAsBoolean());
+        SmartDashboard.putBoolean("Wants gamepeice", WANTS_GAMEPEICE.getAsBoolean());
+        SmartDashboard.putBoolean("At station; ready for arm", AT_STATION_READY_ARM.getAsBoolean());
+        SmartDashboard.putBoolean("At station with arm; ready for rollers", AT_STATION_READY_INTAKE.getAsBoolean());
+        SmartDashboard.putBoolean("At ground intake; ready for rollers", AT_GROUND_READY_INTAKE.getAsBoolean());
+        SmartDashboard.putBoolean("Has algae; ready for scoring", HAS_ALGAE.getAsBoolean());
+        SmartDashboard.putBoolean("At processor; ready for arm", AT_PROCESSOR_READY_ARM.getAsBoolean());
+        SmartDashboard.putBoolean("At processor with arm; ready for rollers", AT_PROCESSOR_READY_ROLLERS.getAsBoolean());
+    }
 }

@@ -21,6 +21,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import raidzero.lib.Elastic;
+import raidzero.robot.subsystems.Superstructure;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 
 public class Robot extends LoggedRobot {
@@ -54,6 +55,7 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
+        Superstructure.updateTelemetry();
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
