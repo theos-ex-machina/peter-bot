@@ -9,9 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -23,45 +20,6 @@ import java.util.List;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
 public class Constants {
-    public static class Bindings {
-        public static final int DRIVER_PORT = 0;
-        public static CommandXboxController driver = new CommandXboxController(0);
-
-        /** If the driver pulls any of the sticks */
-        public static Trigger DRIVER_WANTS_CONTROL = driver.axisGreaterThan(0, 0.1)
-            .or(driver.axisGreaterThan(1, 0.1))
-            .or(driver.axisGreaterThan(4, 0.1))
-            .or(driver.axisGreaterThan(5, 0.1));
-
-        public static final int OPERATOR_PORT = 1;
-        public static CommandGenericHID operator = new CommandGenericHID(OPERATOR_PORT);
-
-        public static Trigger L1 = operator.button(6);
-        public static Trigger L2 = operator.button(7);
-        public static Trigger L3 = operator.button(8);
-        public static Trigger L4 = operator.button(9);
-
-        public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
-        public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
-
-        /** Button labeled "home" */
-        public static Trigger STATION = operator.button(12);
-        /** Button labeled "bottom right" */
-        public static Trigger GROUND_INTAKE = operator.button(14);
-
-        /** Button labeled "bottom left" */
-        public static Trigger PROCESSOR = operator.button(15);
-        /** Button labeled "top left" */
-        public static Trigger BARGE = operator.button(16);
-
-        public static Trigger CORAL_INTAKE = operator.button(11);
-        public static Trigger CORAL_EXTAKE = operator.button(10);
-
-        public static Trigger ALGAE_INTAKE = operator.button(4);
-        public static Trigger ALGAE_EXTAKE = operator.button(5);
-
-    }
-
     public static class Simulation {
         public static final double BOT_WEIGHT_LBS = 90.0;
 
