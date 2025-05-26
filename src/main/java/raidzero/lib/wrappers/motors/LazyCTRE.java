@@ -1,19 +1,14 @@
-package raidzero.lib.wrappers;
+package raidzero.lib.wrappers.motors;
 
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * I call it an interface for wrapping CTRE motors, rhymes with Grug
  * 
- * @param <T> is the motor ojbec to use
+ * @param <T> is the motor ojbect to use
  * @param <S> is the sensor type value to use for CANcoders
  */
 public interface LazyCTRE<T, S> {
@@ -104,73 +99,6 @@ public interface LazyCTRE<T, S> {
      * @return this motor instance for method chaining
      */
     public LazyCTRE<T, S> build();
-
-    /**
-     * Moves the motor to the supplied position setpoint using a motion magic exponential voltage profile
-     * 
-     * @param setpoint the target position setpoint
-     */
-    public void moveTo(Angle setpoint);
-
-    /**
-     * Moves the motor at the specified velocity using a motion magic velocity voltage profile
-     * 
-     * @param velocity the target velocity for motion magic control
-     */
-    public void moveWithVelocity(AngularVelocity velocity);
-
-    /**
-     * Sets the motor to the target speed
-    
-     * @param speed the speed in percent of max speed [0, 1]
-     */
-    public void set(double speed);
-
-    /**
-     * Stops the motor
-     */
-    public void stop();
-
-    /**
-     * Sets the neutral mode of the motor
-     * 
-     * @param newNeutralModeValue the neutral mode to be applied to the motor
-     */
-    public void setNeutralMode(NeutralModeValue newNeutralModeValue);
-
-    /**
-     * Gets the current feedback position of the motor
-     * 
-     * @return the feedback position as an {@link Angle} object
-     */
-    public Angle getFeedbackPosition();
-
-    /**
-     * Gets the current feedvack velocity of the motor
-     * 
-     * @return the feedback velocity as an {@link AngularVelocity} object
-     */
-    public AngularVelocity getFeedbackVelocity();
-
-    /**
-     * Gets the current feedback acceleration of the motor
-     * @return the feedback acceleration as an {@link AngularAcceleration} object
-     */
-    public AngularAcceleration getFeedbackAcceleration();
-
-    /**
-     * Gets the motor object
-     * 
-     * @return the motor
-     */
-    public T getMotor();
-
-    /**
-     * Gets the follower motor
-     * 
-     * @return the follower motor
-     */
-    public T getFollower();
 
     /**
      * Gets the CANcoder remote sensor

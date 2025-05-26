@@ -1,63 +1,62 @@
-package raidzero.lib.wrappers;
+package raidzero.lib.wrappers.motors;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceValue> {
-    private TalonFXS motor, follower;
+public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, LazyMotor<TalonFX> {
+    private TalonFX motor, follower;
     private int motorID;
 
-    private TalonFXSConfiguration motorConfiguration, followConfiguration;
+    private TalonFXConfiguration motorConfiguration, followConfiguration;
 
     private CANcoder canCoder;
     private CANcoderConfiguration canCoderConfiguration;
 
     /**
-     * Constructs a LazyFXS instance with the specified motor configurations
-     * 
+     * Constructs a LazyTalon instance with the specified motor identifier and configuration parameters.
+     *
      * @param motorID the device id of the motor controller
-     * @param motorArrangement what type of motor the FXS is connected to
      * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) * planetary product)
      * @param invertedValue what direction that is positive for the motor
      * @param statorCurrentLimit the maximum stator current
      * @param supplyCurrentLimit the maximum supply current
      */
-    public LazyFXS(int motorID, MotorArrangementValue motorArrangement, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
+    public LazyTalon(int motorID, double sensorToMechanismRatio, InvertedValue invertedValue, double statorCurrentLimit, double supplyCurrentLimit) {
         this.motorID = motorID;
 
-        motorConfiguration = new TalonFXSConfiguration();
-        motorConfiguration.Commutation.MotorArrangement = motorArrangement;
-        motorConfiguration.ExternalFeedback.SensorToMechanismRatio = sensorToMechanismRatio;
+        motorConfiguration = new TalonFXConfiguration();
+        motorConfiguration.Feedback.SensorToMechanismRatio = sensorToMechanismRatio;
+
         motorConfiguration.MotorOutput.Inverted = invertedValue;
 
         motorConfiguration.CurrentLimits.StatorCurrentLimit = statorCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
         motorConfiguration.CurrentLimits.SupplyCurrentLowerTime = 0.0;
 
-        motor = new TalonFXS(motorID);
+        motor = new TalonFX(motorID);
         motor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
-    public LazyFXS withFollower(int followerID, boolean isInverted) {
-        followConfiguration = new TalonFXSConfiguration();
+    public LazyTalon withFollower(int followerID, boolean isInverted) {
+        followConfiguration = new TalonFXConfiguration();
 
-        follower = new TalonFXS(followerID);
+        follower = new TalonFX(followerID);
         follower.getConfigurator().apply(followConfiguration);
         follower.setControl(new Follower(motorID, isInverted));
 
@@ -65,7 +64,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
+    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection) {
         canCoderConfiguration = new CANcoderConfiguration();
         canCoderConfiguration.MagnetSensor.MagnetOffset = magnetOffset;
         canCoderConfiguration.MagnetSensor.SensorDirection = sensorDirection;
@@ -73,26 +72,26 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
         canCoder = new CANcoder(CANCoderID);
         canCoder.getConfigurator().apply(canCoderConfiguration);
 
-        motorConfiguration.ExternalFeedback.FeedbackRemoteSensorID = CANCoderID;
-        motorConfiguration.ExternalFeedback.ExternalFeedbackSensorSource = sensorType;
+        motorConfiguration.Feedback.FeedbackRemoteSensorID = CANCoderID;
+        motorConfiguration.Feedback.FeedbackSensorSource = sensorType;
 
         return this;
     }
 
     @Override
-    public LazyFXS withCANCoder(int CANCoderID, ExternalFeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
+    public LazyTalon withCANCoder(int CANCoderID, FeedbackSensorSourceValue sensorType, double magnetOffset, SensorDirectionValue sensorDirection, double discontinuityPoint, double rotorToSensorRatio) {
         withCANCoder(CANCoderID, sensorType, magnetOffset, sensorDirection);
 
         canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = discontinuityPoint;
         canCoder.getConfigurator().apply(canCoderConfiguration);
 
-        motorConfiguration.ExternalFeedback.RotorToSensorRatio = rotorToSensorRatio;
+        motorConfiguration.Feedback.RotorToSensorRatio = rotorToSensorRatio;
 
         return this;
     }
 
     @Override
-    public LazyFXS withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
+    public LazyTalon withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.Slot0.kP = p;
         motorConfiguration.Slot0.kI = i;
         motorConfiguration.Slot0.kD = d;
@@ -112,14 +111,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withCustomConfiguration(ParentConfiguration configuration) {
-        motorConfiguration = (TalonFXSConfiguration) configuration;
-
-        return this;
-    }
-
-    @Override
-    public LazyFXS withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
+    public LazyTalon withLimitSwitch(boolean forwardLimitEnable, boolean forwardLimitAutosetPositionEnable, double forwardLimitAutosetPositionValue, boolean reverseLimitEnable, boolean reverseLimitAutosetPositionEnable, double reverseLimitAutosetPositionValue) {
         motorConfiguration.HardwareLimitSwitch.ForwardLimitEnable = forwardLimitEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = forwardLimitAutosetPositionEnable;
         motorConfiguration.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = forwardLimitAutosetPositionValue;
@@ -132,7 +124,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
+    public LazyTalon withSoftLimits(boolean forwardSoftLimitEnable, double forwardSoftLimit, boolean reverseSoftLimitEnable, double reverseSoftLimit) {
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = forwardSoftLimitEnable;
         motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardSoftLimit;
 
@@ -143,7 +135,14 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public LazyFXS build() {
+    public LazyTalon withCustomConfiguration(ParentConfiguration configuration) {
+        motorConfiguration = (TalonFXConfiguration) configuration;
+
+        return this;
+    }
+
+    @Override
+    public LazyTalon build() {
         motor.getConfigurator().apply(motorConfiguration);
 
         return this;
@@ -170,8 +169,13 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public void setNeutralMode(NeutralModeValue newNeutralModeValue) {
-        motor.setNeutralMode(newNeutralModeValue);
+    public void setBrake() {
+        motor.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    @Override
+    public void setCoast() {
+        motor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
@@ -190,7 +194,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public TalonFXS getMotor() {
+    public TalonFX getMotor() {
         return motor;
     }
 
@@ -200,7 +204,16 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
     }
 
     @Override
-    public TalonFXS getFollower() {
+    public TalonFX getFollower() {
         return follower;
+    }
+
+    @Override
+    public void updateTelemetry(MotorTelemetry telemetry) {
+        telemetry.position = motor.getPosition().getValue();        
+        telemetry.velocity = motor.getVelocity().getValue();
+        telemetry.acceleration = motor.getAcceleration().getValue();
+        telemetry.statorCurrent = motor.getStatorCurrent().getValue();
+        telemetry.supplyCurrent = motor.getSupplyCurrent().getValue();
     }
 }

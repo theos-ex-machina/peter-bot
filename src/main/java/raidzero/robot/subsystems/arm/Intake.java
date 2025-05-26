@@ -1,14 +1,16 @@
 package raidzero.robot.subsystems.arm;
 
-import static raidzero.robot.Constants.Arm.Intake.*;
-
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import raidzero.lib.wrappers.LazyCan;
-import raidzero.lib.wrappers.LazyFXS;
+import raidzero.lib.wrappers.motors.LazyFXS;
+
+import static raidzero.robot.subsystems.arm.ArmConstants.Intake.*;
 
 public class Intake extends SubsystemBase {
     private LazyFXS roller;
