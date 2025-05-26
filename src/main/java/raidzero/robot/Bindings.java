@@ -32,25 +32,6 @@ public class Bindings {
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     public static void applyButtonBinds() {
-        swerve.setDefaultCommand(
-            swerve.applyRequest(
-                () -> fieldCentricDrive
-                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
-        );
-
-        // auto home when let go or obtain algae or coral
-        arm.setDefaultCommand(arm.home());
-        intake.setDefaultCommand(intake.stop());
-
-        intake.hasCoral().onTrue(arm.home());
-        intake.hasAlgae().onTrue(arm.home());
-
-        intake.hasCoral().onFalse(arm.home());
-        intake.hasAlgae().onFalse(arm.home());
-
         DRIVER_WANTS_CONTROL.whileTrue(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -106,6 +87,27 @@ public class Bindings {
 
     }
 
+    public static void applyDefaultCommands() {
+        swerve.setDefaultCommand(
+            swerve.applyRequest(
+                () -> fieldCentricDrive
+                    .withVelocityX(-driver.getLeftY() * MaxSpeed)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+            )
+        );
+
+        // auto home when let go or obtain algae or coral
+        arm.setDefaultCommand(arm.home());
+        intake.setDefaultCommand(intake.stop());
+
+        intake.hasCoral().onTrue(arm.home());
+        intake.hasAlgae().onTrue(arm.home());
+
+        intake.hasCoral().onFalse(arm.home());
+        intake.hasAlgae().onFalse(arm.home());
+    }
+
     public void applyManualBindings() {
         L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
         L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
@@ -128,7 +130,6 @@ public class Bindings {
         L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
     }
 
-    public static final int DRIVER_PORT = 0;
     public static CommandXboxController driver = new CommandXboxController(0);
 
     /** If the driver pulls any of the sticks */
@@ -137,8 +138,7 @@ public class Bindings {
         .or(driver.axisGreaterThan(4, 0.1))
         .or(driver.axisGreaterThan(5, 0.1));
 
-    public static final int OPERATOR_PORT = 1;
-    public static CommandGenericHID operator = new CommandGenericHID(OPERATOR_PORT);
+    public static CommandGenericHID operator = new CommandGenericHID(1);
 
     public static Trigger L1 = operator.button(6).and(DRIVER_WANTS_CONTROL.negate());
     public static Trigger L2 = operator.button(7).and(DRIVER_WANTS_CONTROL.negate());

@@ -39,6 +39,7 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("AutoChooser", autoChooser);
         PathfindingCommand.warmupCommand().schedule();
+        Bindings.applyDefaultCommands();
         Bindings.applyButtonBinds(); 
 
         swerve.registerTelemetry(logger::telemeterize);
