@@ -41,6 +41,16 @@ public class Bindings {
             )
         );
 
+        // auto home when let go or obtain algae or coral
+        arm.setDefaultCommand(arm.home());
+        intake.setDefaultCommand(intake.stop());
+
+        intake.hasCoral().onTrue(arm.home());
+        intake.hasAlgae().onTrue(arm.home());
+
+        intake.hasCoral().onFalse(arm.home());
+        intake.hasAlgae().onFalse(arm.home());
+
         DRIVER_WANTS_CONTROL.whileTrue(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -50,9 +60,53 @@ public class Bindings {
             )
         );
 
-        arm.setDefaultCommand(arm.home());
-        intake.setDefaultCommand(intake.stop());
+        L4.and(READY_FOR_REEF)
+            .whileTrue(swerve.goToNearestReef(4));
 
+        L4.and(AT_REEF_READY_ARM)
+            .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
+
+        L4.and(AT_REEF_READY_ROLLERS)
+            .whileTrue(intake.extakeCoral());
+
+        STATION.and(WANTS_GAMEPEICE)
+            .whileTrue(swerve.goToNearestStation());
+
+        STATION.and(AT_STATION_READY_ARM)
+            .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
+
+        STATION.and(AT_STATION_READY_INTAKE)
+            .whileTrue(intake.intakeCoral());
+
+        // allow driver movment for ground intake
+        GROUND_INTAKE.and(WANTS_GAMEPEICE)
+            .whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+
+        // TODO: Add autopath logic to ground intake
+        GROUND_INTAKE.and(AT_GROUND_READY_INTAKE)
+            .whileTrue(intake.intakeCoral());
+
+        L2_ALGAE.and(READY_FOR_REEF)
+            .whileTrue(swerve.goToNearestL2Algae());
+
+        L2_ALGAE.and(AT_REEF_READY_ARM)
+            .whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+
+        L2_ALGAE.and(AT_REEF_READY_ROLLERS)
+            .whileTrue(intake.intakeAlgae());
+
+        PROCESSOR.and(HAS_ALGAE)
+            .whileTrue(swerve.goToProcessor());
+
+        PROCESSOR.and(AT_PROCESSOR_READY_ARM)
+            .whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
+
+        PROCESSOR.and(AT_PROCESSOR_READY_ROLLERS)
+            .whileTrue(intake.extakeAlgae());
+
+    }
+
+    public void applyManualBindings() {
         L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
         L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
         L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
@@ -72,58 +126,6 @@ public class Bindings {
 
         L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
         L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
-
-        // auto home when let go or obtain algae or coral
-        intake.hasCoral().onTrue(arm.home());
-        intake.hasAlgae().onTrue(arm.home());
-
-        intake.hasCoral().onFalse(arm.home());
-        intake.hasAlgae().onFalse(arm.home());
-
-        L4.and(DRIVER_WANTS_CONTROL.negate()).and(READY_FOR_REEF)
-            .whileTrue(swerve.goToNearestReef(4));
-
-        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ARM)
-            .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
-
-        L4.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ROLLERS)
-            .whileTrue(intake.extakeCoral());
-
-        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(WANTS_GAMEPEICE)
-            .whileTrue(swerve.goToNearestStation());
-
-        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
-
-        STATION.and(DRIVER_WANTS_CONTROL.negate()).and(AT_STATION_READY_INTAKE)
-            .whileTrue(intake.intakeCoral());
-
-        // allow driver movment for ground intake
-        GROUND_INTAKE.and(WANTS_GAMEPEICE)
-            .whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
-
-        // TODO: Add autopath logic to ground intake
-        GROUND_INTAKE.and(AT_GROUND_READY_INTAKE)
-            .whileTrue(intake.intakeCoral());
-
-        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(READY_FOR_REEF)
-            .whileTrue(swerve.goToNearestL2Algae());
-
-        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
-
-        L2_ALGAE.and(DRIVER_WANTS_CONTROL.negate()).and(AT_REEF_READY_ROLLERS)
-            .whileTrue(intake.intakeAlgae());
-
-        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(HAS_ALGAE)
-            .whileTrue(swerve.goToProcessor());
-
-        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(AT_PROCESSOR_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
-
-        PROCESSOR.and(DRIVER_WANTS_CONTROL.negate()).and(AT_PROCESSOR_READY_ROLLERS)
-            .whileTrue(intake.extakeAlgae());
-
     }
 
     public static final int DRIVER_PORT = 0;
@@ -138,28 +140,28 @@ public class Bindings {
     public static final int OPERATOR_PORT = 1;
     public static CommandGenericHID operator = new CommandGenericHID(OPERATOR_PORT);
 
-    public static Trigger L1 = operator.button(6);
-    public static Trigger L2 = operator.button(7);
-    public static Trigger L3 = operator.button(8);
-    public static Trigger L4 = operator.button(9);
+    public static Trigger L1 = operator.button(6).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger L2 = operator.button(7).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger L3 = operator.button(8).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger L4 = operator.button(9).and(DRIVER_WANTS_CONTROL.negate());
 
-    public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5);
-    public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5);
+    public static Trigger L3_ALGAE = operator.axisGreaterThan(0, 0.5).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger L2_ALGAE = operator.axisGreaterThan(1, 0.5).and(DRIVER_WANTS_CONTROL.negate());
 
     /** Button labeled "home" */
-    public static Trigger STATION = operator.button(12);
+    public static Trigger STATION = operator.button(12).and(DRIVER_WANTS_CONTROL.negate());
     /** Button labeled "bottom right" */
     public static Trigger GROUND_INTAKE = operator.button(14);
 
     /** Button labeled "bottom left" */
-    public static Trigger PROCESSOR = operator.button(15);
+    public static Trigger PROCESSOR = operator.button(15).and(DRIVER_WANTS_CONTROL.negate());
     /** Button labeled "top left" */
-    public static Trigger BARGE = operator.button(16);
+    public static Trigger BARGE = operator.button(16).and(DRIVER_WANTS_CONTROL.negate());
 
-    public static Trigger CORAL_INTAKE = operator.button(11);
-    public static Trigger CORAL_EXTAKE = operator.button(10);
+    public static Trigger CORAL_INTAKE = operator.button(11).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger CORAL_EXTAKE = operator.button(10).and(DRIVER_WANTS_CONTROL.negate());
 
-    public static Trigger ALGAE_INTAKE = operator.button(4);
-    public static Trigger ALGAE_EXTAKE = operator.button(5);
+    public static Trigger ALGAE_INTAKE = operator.button(4).and(DRIVER_WANTS_CONTROL.negate());
+    public static Trigger ALGAE_EXTAKE = operator.button(5).and(DRIVER_WANTS_CONTROL.negate());
 
 }
