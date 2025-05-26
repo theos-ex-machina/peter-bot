@@ -17,6 +17,8 @@ public interface ArmIO {
     void moveWrist(Angle setpoint);
     Angle getWristAngle();
 
+    void updateTelemetry();
+
     public class Real implements ArmIO {
         protected LazyFXS proximalJoint, distalJoint;
         protected LazyFXS wrist;
@@ -83,6 +85,13 @@ public interface ArmIO {
         @Override
         public Angle getWristAngle() {
             return wrist.getFeedbackPosition();
+        }
+
+        @Override
+        public void updateTelemetry() {
+            proximalJoint.updateTelemetry(ProximalJoint.TELEMETRY);
+            distalJoint.updateTelemetry(DistalJoint.TELEMETRY);
+            wrist.updateTelemetry(Wrist.TELEMETRY);
         }
     }
 

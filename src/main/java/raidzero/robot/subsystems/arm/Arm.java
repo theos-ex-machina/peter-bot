@@ -265,6 +265,8 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        io.updateTelemetry();
+
         Angle[] angles = io.getJointAngles();
         Pose2d calculatedPose = calculatePose(angles);
 

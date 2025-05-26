@@ -1,19 +1,13 @@
 package raidzero.robot.subsystems.drivetrain;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
@@ -61,36 +55,4 @@ public class SwerveConstants {
         public static final Distance SETPOINT_TOLERANCE = Meters.of(0.05);
         public static final Angle ROTATION_ERROR_TOLERANCE = Degrees.of(1.0);
     }
-
-    public static class Simulation {
-        public static final double BOT_WEIGHT_LBS = 90.0;
-
-        public static final double TRACK_WIDTH_IN = 18.5;
-        public static final double TRACK_LENGTH_IN = 18.5;
-
-        public static final double BOT_LENGTH_BUMPERS = 24;
-        public static final double BOT_WIDTH_BUMPERS = 24;
-
-        public static final double WHEEL_COF = 1.2;
-        public static final double SIM_LOOP_PERIOD_S = 0.002;
-
-        public static final DriveTrainSimulationConfig SWERVE_SIM_CONFIG = DriveTrainSimulationConfig.Default()
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModule(
-                new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60(1),
-                    DCMotor.getFalcon500(1),
-                    TunerConstants.kDriveGearRatio,
-                    TunerConstants.kSteerGearRatio,
-                    TunerConstants.kDriveFrictionVoltage,
-                    TunerConstants.kSteerFrictionVoltage,
-                    TunerConstants.kWheelRadius,
-                    TunerConstants.kSteerInertia,
-                    WHEEL_COF
-                )
-            )
-            .withTrackLengthTrackWidth(Inches.of(TRACK_LENGTH_IN), Inches.of(TRACK_WIDTH_IN))
-            .withBumperSize(Inches.of(BOT_LENGTH_BUMPERS), Inches.of(BOT_WIDTH_BUMPERS));
-    }
-
 }
