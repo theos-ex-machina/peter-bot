@@ -1,12 +1,14 @@
-package raidzero.robot.subsystems.drivetrain;
+package raidzero.robot.subsystems.drivetrain.commands;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import raidzero.robot.Constants.Swerve.Setpoints;
+
 import raidzero.robot.RobotContainer;
+import raidzero.robot.subsystems.drivetrain.Swerve;
+import static raidzero.robot.subsystems.drivetrain.SwerveConstants.Setpoints;
 
 /**
  * Checks goes to the nearest reef that does not have a coral at the specified level
