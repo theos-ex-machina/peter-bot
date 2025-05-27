@@ -1,22 +1,23 @@
 package raidzero.robot.subsystems.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import raidzero.lib.R0Subsystem;
 
 import static raidzero.robot.subsystems.arm.ArmConstants.Intake.*;
 
 import com.ctre.phoenix6.Utils;
 
-public class Intake extends SubsystemBase {
-    private IntakeIO io;
+public class Intake extends R0Subsystem<IntakeIO> {
     private static Intake system;
 
     /**
      * Constructs a {@link CoralIntake} subsystem instance
+     * 
+     * @param io the hardware IO to use (simulation/real)
      */
     private Intake(IntakeIO io) {
-        this.io = io;
+        super(io);
     }
 
     /**
@@ -39,7 +40,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Intakes an lgae
-
+    
      * @return A {@link Command} that intakes an algae
      */
     public Command intakeAlgae() {
@@ -125,7 +126,7 @@ public class Intake extends SubsystemBase {
         if (system == null) {
             if (Utils.isSimulation())
                 system = new Intake(new IntakeIO.Sim());
-            else 
+            else
                 system = new Intake(new IntakeIO.Real());
         }
 

@@ -1,5 +1,6 @@
 package raidzero.robot.subsystems.arm;
 
+import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.LazyCan;
 import raidzero.lib.wrappers.motors.LazyFXS;
 
@@ -9,7 +10,7 @@ import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public interface IntakeIO {
+public interface IntakeIO extends SubsystemIO {
     /**
      * Sets the speed of the intake rollers
      * 
@@ -31,7 +32,7 @@ public interface IntakeIO {
 
     /**
      * Returns true if the bottom laser is within the threshold
-
+    
      * @return a trigger that is activated if the bottom laser is within the specified setpoint
      */
     public Trigger bottomLaserWithinThreshold();
@@ -45,7 +46,7 @@ public interface IntakeIO {
 
     /**
      * Returns true if the bottom laser is within the threshold
-
+    
      * @return a trigger that is activated if the top laser is within the specified setpoint
      */
     public Trigger topLaserWithinThreshold();
@@ -99,9 +100,12 @@ public interface IntakeIO {
         public Trigger topLaserWithinThreshold() {
             return new Trigger(() -> topLaser.withinThreshold());
         }
+
+        @Override
+        public void updateTelemetry() {
+            roller.updateTelemetry(TELEMETRY);
+        }
     }
 
-    public class Sim extends Real {
-
-    }
+    public class Sim extends Real {}
 }

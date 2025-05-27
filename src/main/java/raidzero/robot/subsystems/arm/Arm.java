@@ -13,22 +13,26 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.ctre.phoenix6.Utils;
 
 import raidzero.lib.Interpolate;
+import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.arm.ArmConstants.DistalJoint;
 import raidzero.robot.subsystems.arm.ArmConstants.Positions;
 import raidzero.robot.subsystems.arm.ArmConstants.ProximalJoint;
 
-public class Arm extends SubsystemBase {
+public class Arm extends R0Subsystem<ArmIO> {
     private static Arm system;
-    private ArmIO io;
 
+    /**
+     * Constructs a {@link Arm} subsystem instance
+     * 
+     * @param io the hardware IO to use (simulation or real hardware)
+     */
     private Arm(ArmIO io) {
-        this.io = io;
+        super(io);
     }
 
     /**
@@ -279,6 +283,11 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Angle", io.getWristAngle().in(Degrees));
     }
 
+    /**
+     * Returns the singleton instance of the {@link Arm} subystem
+    
+     * @return the singleton Arm instance
+     */
     public static Arm system() {
         if (system == null) {
             if (Utils.isSimulation())
