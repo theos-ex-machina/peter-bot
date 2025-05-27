@@ -1,40 +1,22 @@
 package raidzero.robot.subsystems.arm;
 
-import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
-import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import raidzero.lib.wrappers.LazyCan;
-import raidzero.lib.wrappers.motors.LazyFXS;
-
 import static raidzero.robot.subsystems.arm.ArmConstants.Intake.*;
 
-public class Intake extends SubsystemBase {
-    private LazyFXS roller;
-    private LazyCan bottomLaser, topLaser;
+import com.ctre.phoenix6.Utils;
 
+public class Intake extends SubsystemBase {
+    private IntakeIO io;
     private static Intake system;
 
     /**
      * Constructs a {@link CoralIntake} subsystem instance
      */
-    private Intake() {
-        roller = new LazyFXS(
-            LEADER_ID, MOTOR_ARRANGEMENT,
-            SENSOR_TO_MECHANISM_RATIO, INVERTED_VALUE,
-            STATOR_CURRENT_LIMIT, SUPPLY_CURRENT_LIMIT
-        ).withFollower(FOLLOWER_ID, FOLLOWER_INVERTED).build();
-
-        bottomLaser = new LazyCan(BOTTOM_LASERCAN_ID).withRangingMode(RangingMode.SHORT)
-            .withRegionOfInterest(14, 8, 16, 16).withTimingBudget(TimingBudget.TIMING_BUDGET_20MS)
-            .withThreshold(BOTTOM_LASER_THRESHOLD_MM);
-
-        topLaser = new LazyCan(TOP_LASERCAN_ID).withRangingMode(RangingMode.LONG)
-            .withRegionOfInterest(8, 14, 16, 4).withTimingBudget(TimingBudget.TIMING_BUDGET_20MS)
-            .withThreshold(TOP_LASER_THRESHOLD_MM);
+    private Intake(IntakeIO io) {
+        this.io = io;
     }
 
     /**
@@ -43,7 +25,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that intakes a coral
      */
     public Command intakeCoral() {
-        return run(() -> roller.set(INTAKE_SPEED)).until(() -> bottomLaser.withinThreshold());
+        return run(() -> io.setSpeed(INTAKE_SPEED)).until(io.bottomLaserWithinThreshold());
     }
 
     /**
@@ -52,7 +34,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that extakes a coral
      */
     public Command extakeCoral() {
-        return run(() -> roller.set(EXTAKE_SPEED));
+        return run(() -> io.setSpeed(EXTAKE_SPEED));
     }
 
     /**
@@ -61,7 +43,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that intakes an algae
      */
     public Command intakeAlgae() {
-        return run(() -> roller.set(INTAKE_SPEED));
+        return run(() -> io.setSpeed(INTAKE_SPEED));
     }
 
     /**
@@ -70,7 +52,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that extakes an algae
      */
     public Command extakeAlgae() {
-        return run(() -> roller.set(ALGAE_EJECT_SPEED));
+        return run(() -> io.setSpeed(ALGAE_EJECT_SPEED));
     }
 
     /**
@@ -79,7 +61,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that holds the algae
      */
     public Command holdAlgae() {
-        return run(() -> roller.set(ALGAE_HOLD_SPEED));
+        return run(() -> io.setSpeed(ALGAE_HOLD_SPEED));
     }
 
     /**
@@ -88,7 +70,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} that stops the intake
      */
     public Command stop() {
-        return runOnce(() -> roller.stop());
+        return runOnce(() -> io.stop());
     }
 
     /**
@@ -98,10 +80,10 @@ public class Intake extends SubsystemBase {
      */
     public Command idleBehavior() {
         return run(() -> {
-            if (topLaser.withinThreshold() && !bottomLaser.withinThreshold()) {
-                roller.set(ALGAE_HOLD_SPEED);
+            if (io.topLaserWithinThreshold().getAsBoolean() && !io.bottomLaserWithinThreshold().getAsBoolean()) {
+                io.setSpeed(ALGAE_HOLD_SPEED);
             } else {
-                roller.stop();
+                io.stop();
             }
         });
     }
@@ -112,7 +94,7 @@ public class Intake extends SubsystemBase {
      * @return a {@link Trigger}
      */
     public Trigger hasAlgae() {
-        return new Trigger(() -> topLaser.withinThreshold() && !bottomLaser.withinThreshold());
+        return io.topLaserWithinThreshold().and(io.bottomLaserWithinThreshold().negate());
     }
 
     /**
@@ -121,7 +103,7 @@ public class Intake extends SubsystemBase {
      * @return a {@link Trigger}
      */
     public Trigger hasCoral() {
-        return new Trigger(() -> topLaser.withinThreshold() && bottomLaser.withinThreshold());
+        return io.topLaserWithinThreshold().and(io.bottomLaserWithinThreshold());
     }
 
     /**
@@ -131,7 +113,7 @@ public class Intake extends SubsystemBase {
      * @return A {@link Command} to run the roller at the specified speed
      */
     public Command run(double speed) {
-        return run(() -> roller.set(speed));
+        return run(() -> io.setSpeed(speed));
     }
 
     /**
@@ -141,7 +123,10 @@ public class Intake extends SubsystemBase {
      */
     public static Intake system() {
         if (system == null) {
-            system = new Intake();
+            if (Utils.isSimulation())
+                system = new Intake(new IntakeIO.Sim());
+            else 
+                system = new Intake(new IntakeIO.Real());
         }
 
         return system;
