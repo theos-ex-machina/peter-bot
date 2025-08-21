@@ -1,22 +1,19 @@
 package raidzero.robot.subsystems.arm;
 
-import java.util.List;
-
 import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import com.ctre.phoenix6.Utils;
-
+import java.util.List;
 import raidzero.lib.Interpolate;
 import raidzero.lib.R0Subsystem;
 import raidzero.robot.subsystems.arm.ArmConstants.DistalJoint;
@@ -28,7 +25,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Constructs a {@link Arm} subsystem instance
-     * 
+     *
      * @param io the hardware IO to use (simulation or real hardware)
      */
     private Arm(ArmIO io) {
@@ -47,7 +44,7 @@ public class Arm extends R0Subsystem<ArmIO> {
             Angle[] angles = calculateJointAngles(setpoint);
 
             io.moveJoints(angles[0], angles[1]);
-            io.moveWrist(wristAngle.minus(angles[0]));
+            io.moveWrist(wristAngle.minus(angles[0].plus(angles[1])));
         });
     }
 
@@ -68,7 +65,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Returns the arm to it's home / stowed position
-     * 
+     *
      * @return a {@link Command}
      */
     public Command home() {
@@ -110,8 +107,8 @@ public class Arm extends R0Subsystem<ArmIO> {
     }
 
     /**
-     * Calculates the cartesian pose given the angles of the joints 
-     * 
+     * Calculates the cartesian pose given the angles of the joints
+     *
      * @param jointAngles the angles of the jointsj
      * @return the cartesian pose
      */
@@ -130,7 +127,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the L4 position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL4() {
@@ -139,7 +136,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the L3 position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL3() {
@@ -148,7 +145,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the L2 position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL2() {
@@ -157,7 +154,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the L1 position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL1() {
@@ -166,7 +163,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the station position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atStation() {
@@ -175,7 +172,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the ground intake position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atGroundIntake() {
@@ -184,7 +181,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the l3 algae position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL3Algae() {
@@ -193,7 +190,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the L2 algae position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atL2Algae() {
@@ -202,7 +199,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the barge position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atBarge() {
@@ -211,7 +208,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the processor position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atProcessor() {
@@ -220,7 +217,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Creates a {@link Trigger} object that is activated if the arm is at the home position
-     * 
+     *
      * @return the Trigger object
      */
     public Trigger atHome() {
@@ -229,7 +226,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Returns a {@link Trigger} that becomes active if all joints of the arm are within a preset tolerance of the supplied setpoint
-     * 
+     *
      * @param setpoint the queried setpoint
      * @param wristAngle the queried wrist angle
      * @return a {@link Trigger}
@@ -250,7 +247,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Returns a {@link Trigger} that becomes active if all joints of the arm are within a preset tolerance of the supplied setpoint
-     * 
+     *
      * @param setpoint the queried setpoint
      * @param wristAngle the queried wrist angle
      * @return a {@link Trigger}
@@ -269,7 +266,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     @Override
     public void periodic() {
-        io.updateTelemetry();
+        super.periodic();
 
         Angle[] angles = io.getJointAngles();
         Pose2d calculatedPose = calculatePose(angles);

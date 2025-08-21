@@ -3,13 +3,12 @@ package raidzero.robot.subsystems.drivetrain;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SwerveConstants {
     public static class Setpoints {
@@ -42,12 +41,11 @@ public class SwerveConstants {
             )
         );
 
-        public static final List<Pose2d> ALL_REEFS = new ArrayList<Pose2d>() {
-            {
-                addAll(RIGHT_REEF_WAYPOINTS);
-                addAll(LEFT_REEF_WAYPOINTS);
-            }
-        };
+        public static final List<Pose2d> ALL_REEFS = new ArrayList<Pose2d>();
+        static {
+            ALL_REEFS.addAll(RIGHT_REEF_WAYPOINTS);
+            ALL_REEFS.addAll(LEFT_REEF_WAYPOINTS);
+        }
 
         public static final Pose2d BLUE_PROCESSOR = new Pose2d(5.987542, 0.78, Rotation2d.fromDegrees(90));
         public static final Pose2d RED_PROCESSOR = new Pose2d(17.55 - 5.987542, 8.05 - 0.78, Rotation2d.fromDegrees(180));

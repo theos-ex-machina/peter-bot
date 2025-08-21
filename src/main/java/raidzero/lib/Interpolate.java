@@ -1,13 +1,12 @@
 package raidzero.lib;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class Interpolate<T> extends Command {
     private final List<T> path;

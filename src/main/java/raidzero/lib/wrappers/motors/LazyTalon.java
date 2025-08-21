@@ -13,7 +13,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -210,7 +209,7 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
 
     @Override
     public void updateTelemetry(MotorTelemetry telemetry) {
-        telemetry.position = motor.getPosition().getValue();        
+        telemetry.position = motor.getPosition().getValue();
         telemetry.velocity = motor.getVelocity().getValue();
         telemetry.acceleration = motor.getAcceleration().getValue();
         telemetry.statorCurrent = motor.getStatorCurrent().getValue();

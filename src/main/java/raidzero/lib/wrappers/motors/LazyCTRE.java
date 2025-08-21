@@ -7,14 +7,14 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 /**
  * I call it an interface for wrapping CTRE motors, rhymes with Grug
- * 
+ *
  * @param <T> is the motor ojbect to use
  * @param <S> is the sensor type value to use for CANcoders
  */
 public interface LazyCTRE<T, S> {
     /**
      * Configures a follower motor
-     * 
+     *
      * @param followerID the device ID of the follower motor
      * @param isInverted if true, the follower output is inverted with respect to the master
      * @return this motor instance for method chaining
@@ -23,7 +23,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Configures a {@link CANcoder} remote feedback sensor
-     * 
+     *
      * @param CANCoderID the device ID of the CANcoder
      * @param sensorType the type of feedback the CANcoder will supply
      * @param magnetOffset the digital magnet offset applied to the sensor
@@ -34,7 +34,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Configures a {@link CANcoder} remote feedback sensor with a specified rotor to sensor ratio and discontinuity point
-     * 
+     *
      * @param CANCoderID the device ID of the CANcoder
      * @param sensorType the type of feedback the CANcoder will supply
      * @param magnetOffset the digital magnet offset applied to the sensor
@@ -47,7 +47,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Configures the motion magic parameters for this motor's motion prifiling
-     * 
+     *
      * @param p the proportional gain
      * @param i the integral gain
      * @param d the derivative gain
@@ -64,7 +64,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Configures the forward and reverse hardware limit switches
-     * 
+     *
      * @param forwardlimitenable if true, enables the forward limit switch
      * @param forwardLimitAutosetPositionEnable if true, the encoder position will be set to the forward limit autoset position value when the limit is triggered
      * @param forwardLimitAutosetPositionValue the value to set the encoder position to when the limit is triggered
@@ -77,7 +77,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Configures the forward and reverse software limit switches
-     * 
+     *
      * @param forwardSoftLimitEnable if true, enables the forward software limit switch
      * @param forwardSoftLimit the encoder value of the forward software limit in mechanism rotations
      * @param reverseSoftLimitEnable if true, enables the reverse software limit switch
@@ -88,7 +88,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Applies a custom configuration to this motor
-    
+
      * @param configuration the configuration object specific to the motor type
      * @return this motor instance for method chaining
      */
@@ -102,7 +102,7 @@ public interface LazyCTRE<T, S> {
 
     /**
      * Gets the CANcoder remote sensor
-     * 
+     *
      * @return the {@link CANcoder} object
      */
     public CANcoder getCanCoder();

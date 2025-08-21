@@ -1,19 +1,20 @@
 package raidzero.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Kilogram;
+import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
-
-import java.util.List;
 
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
+import java.util.List;
 import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
 
 public class ArmConstants {
@@ -44,6 +45,7 @@ public class ArmConstants {
         public static final double ACCELERATION = 1.0;
 
         public static final Distance LENGTH = Meters.of(1.0);
+        public static final Mass MASS = Kilograms.of(1.0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
@@ -72,6 +74,7 @@ public class ArmConstants {
         public static final double ACCELERATION = 1.0;
 
         public static final Distance LENGTH = Meters.of(1.0);
+        public static final Mass MASS = Kilograms.of(1.0);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }

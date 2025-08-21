@@ -29,7 +29,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
 
     /**
      * Constructs a LazyFXS instance with the specified motor configurations
-     * 
+     *
      * @param motorID the device id of the motor controller
      * @param motorArrangement what type of motor the FXS is connected to
      * @param sensorToMechanismRatio the gear ratio of the sensor to the mechanism (tell the mech team (driven / driving) * planetary product)
@@ -211,7 +211,7 @@ public class LazyFXS implements LazyCTRE<TalonFXS, ExternalFeedbackSensorSourceV
 
     @Override
     public void updateTelemetry(MotorTelemetry telemetry) {
-        telemetry.position = motor.getPosition().getValue();        
+        telemetry.position = motor.getPosition().getValue();
         telemetry.velocity = motor.getVelocity().getValue();
         telemetry.acceleration = motor.getAcceleration().getValue();
         telemetry.statorCurrent = motor.getStatorCurrent().getValue();

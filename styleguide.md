@@ -12,7 +12,7 @@
 - Member variables
     - No "m" with camelCase (eg: `someMemberVariable` instead of `mSomeMemberVariable`)
 - Subsystems should be in the form of a singleton class
-- Class method order: Getters, setters, other methods (alphabetically)
+- Class method order: constructor, functional methods (grouped in logical order), getters, setters, system method
 - Member definition order
     - Grouped logically (in an order that makes sense), but Talon configs then subsystem static object getter comes last
 - Sample order:
@@ -27,7 +27,6 @@
     9. Subsystem instance getter
     10. Subsystem configs (Eg, Swerve will have AutoBuilder config)
     11. Device configs (If applicable)
-- Subsystem constructors are private and will be called within the class
 - Import statements: let Java RedHat extension take care of it
 - Spaces in code where necessary (Eg, between methods, between operations such as + or -)
 - Braces are on the same line as method declarations

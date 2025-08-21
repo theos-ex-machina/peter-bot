@@ -3,26 +3,23 @@ package raidzero.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static raidzero.robot.subsystems.Superstructure.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import raidzero.robot.subsystems.arm.Arm;
 import raidzero.robot.subsystems.arm.ArmConstants.Positions;
 import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.subsystems.drivetrain.Swerve;
 import raidzero.robot.subsystems.drivetrain.TunerConstants;
 
-import static raidzero.robot.subsystems.Superstructure.*;
-
 public class Bindings {
     private static final Swerve swerve = Swerve.system();
     private static final Arm arm = Arm.system();
-    private static final Intake intake = Intake.system();
+    // private static final Intake intake = Intake.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
@@ -31,7 +28,7 @@ public class Bindings {
         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    public static void applyButtonBinds() {
+    public static void setButtonBinds() {
         DRIVER_WANTS_CONTROL.whileTrue(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -41,53 +38,53 @@ public class Bindings {
             )
         );
 
-        L4.and(READY_FOR_REEF)
-            .whileTrue(swerve.goToNearestReef(4));
+        // L4.and(READY_FOR_REEF)
+        // .whileTrue(swerve.goToNearestReef(4));
 
-        L4.and(AT_REEF_READY_ARM)
-            .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
+        // L4.and(AT_REEF_READY_ARM)
+        // .whileTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
 
-        L4.and(AT_REEF_READY_ROLLERS)
-            .whileTrue(intake.extakeCoral());
+        // L4.and(AT_REEF_READY_ROLLERS)
+        // .whileTrue(intake.extakeCoral());
 
-        STATION.and(WANTS_GAMEPEICE)
-            .whileTrue(swerve.goToNearestStation());
+        // STATION.and(WANTS_GAMEPEICE)
+        // .whileTrue(swerve.goToNearestStation());
 
-        STATION.and(AT_STATION_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
+        // STATION.and(AT_STATION_READY_ARM)
+        // .whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
 
-        STATION.and(AT_STATION_READY_INTAKE)
-            .whileTrue(intake.intakeCoral());
+        // STATION.and(AT_STATION_READY_INTAKE)
+        // .whileTrue(intake.intakeCoral());
 
-        // allow driver movment for ground intake
-        GROUND_INTAKE.and(WANTS_GAMEPEICE)
-            .whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+        // // allow driver movment for ground intake
+        // GROUND_INTAKE.and(WANTS_GAMEPEICE)
+        // .whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
 
-        // TODO: Add autopath logic to ground intake
-        GROUND_INTAKE.and(AT_GROUND_READY_INTAKE)
-            .whileTrue(intake.intakeCoral());
+        // // TODO: Add autopath logic to ground intake
+        // GROUND_INTAKE.and(AT_GROUND_READY_INTAKE)
+        // .whileTrue(intake.intakeCoral());
 
-        L2_ALGAE.and(READY_FOR_REEF)
-            .whileTrue(swerve.goToNearestL2Algae());
+        // L2_ALGAE.and(READY_FOR_REEF)
+        // .whileTrue(swerve.goToNearestL2Algae());
 
-        L2_ALGAE.and(AT_REEF_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+        // L2_ALGAE.and(AT_REEF_READY_ARM)
+        // .whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
 
-        L2_ALGAE.and(AT_REEF_READY_ROLLERS)
-            .whileTrue(intake.intakeAlgae());
+        // L2_ALGAE.and(AT_REEF_READY_ROLLERS)
+        // .whileTrue(intake.intakeAlgae());
 
-        PROCESSOR.and(HAS_ALGAE)
-            .whileTrue(swerve.goToProcessor());
+        // PROCESSOR.and(HAS_ALGAE)
+        // .whileTrue(swerve.goToProcessor());
 
-        PROCESSOR.and(AT_PROCESSOR_READY_ARM)
-            .whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
+        // PROCESSOR.and(AT_PROCESSOR_READY_ARM)
+        // .whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
 
-        PROCESSOR.and(AT_PROCESSOR_READY_ROLLERS)
-            .whileTrue(intake.extakeAlgae());
+        // PROCESSOR.and(AT_PROCESSOR_READY_ROLLERS)
+        // .whileTrue(intake.extakeAlgae());
 
     }
 
-    public static void applyDefaultCommands() {
+    public static void setDefaultCommands() {
         swerve.setDefaultCommand(
             swerve.applyRequest(
                 () -> fieldCentricDrive
@@ -97,18 +94,18 @@ public class Bindings {
             )
         );
 
-        // auto home when let go or obtain algae or coral
-        arm.setDefaultCommand(arm.home());
-        intake.setDefaultCommand(intake.stop());
+        // // auto home when let go or obtain algae or coral
+        // arm.setDefaultCommand(arm.home());
+        // intake.setDefaultCommand(intake.stop());
 
-        intake.hasCoral().onTrue(arm.home());
-        intake.hasAlgae().onTrue(arm.home());
+        // intake.hasCoral().onTrue(arm.home());
+        // intake.hasAlgae().onTrue(arm.home());
 
-        intake.hasCoral().onFalse(arm.home());
-        intake.hasAlgae().onFalse(arm.home());
+        // intake.hasCoral().onFalse(arm.home());
+        // intake.hasAlgae().onFalse(arm.home());
     }
 
-    public void applyManualBindings() {
+    public static void applyManualBindings() {
         L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
         L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
         L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
@@ -120,11 +117,11 @@ public class Bindings {
         PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
         BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE));
 
-        CORAL_INTAKE.whileTrue(intake.intakeCoral());
-        CORAL_EXTAKE.whileTrue(intake.extakeCoral());
+        // CORAL_INTAKE.whileTrue(intake.intakeCoral());
+        // CORAL_EXTAKE.whileTrue(intake.extakeCoral());
 
-        ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
-        ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
+        // ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
+        // ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
 
         L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
         L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));

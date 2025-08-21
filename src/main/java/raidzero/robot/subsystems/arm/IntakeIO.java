@@ -1,19 +1,18 @@
 package raidzero.robot.subsystems.arm;
 
-import raidzero.lib.SubsystemIO;
-import raidzero.lib.wrappers.LazyCan;
-import raidzero.lib.wrappers.motors.LazyFXS;
-
 import static raidzero.robot.subsystems.arm.ArmConstants.Intake.*;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import raidzero.lib.SubsystemIO;
+import raidzero.lib.wrappers.LazyCan;
+import raidzero.lib.wrappers.motors.LazyFXS;
 
 public interface IntakeIO extends SubsystemIO {
     /**
      * Sets the speed of the intake rollers
-     * 
+     *
      * @param speed the speed to set in percentage of full speed [0, 1]
     */
     public void setSpeed(double speed);
@@ -25,28 +24,28 @@ public interface IntakeIO extends SubsystemIO {
 
     /**
      * Gets the bottom laser sensor distance
-     * 
+     *
      * @return the distance in mm
      */
     public int getBottomLaserDistance();
 
     /**
      * Returns true if the bottom laser is within the threshold
-    
+
      * @return a trigger that is activated if the bottom laser is within the specified setpoint
      */
     public Trigger bottomLaserWithinThreshold();
 
     /**
      * Gets the top Laser sensor distance
-     * 
+     *
      * @return the distance in mm
      */
     public int getTopLaserDistance();
 
     /**
      * Returns true if the bottom laser is within the threshold
-    
+
      * @return a trigger that is activated if the top laser is within the specified setpoint
      */
     public Trigger topLaserWithinThreshold();
