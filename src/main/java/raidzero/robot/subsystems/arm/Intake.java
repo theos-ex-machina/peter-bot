@@ -25,7 +25,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that intakes a coral
      */
     public Command intakeCoral() {
-        return run(() -> io.setSpeed(INTAKE_SPEED)).until(io.bottomLaserWithinThreshold());
+        return run(() -> io.setSpeed(INTAKE_SPEED_PERCENT)).until(io.bottomLaserWithinThreshold());
     }
 
     /**
@@ -34,7 +34,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that extakes a coral
      */
     public Command extakeCoral() {
-        return run(() -> io.setSpeed(EXTAKE_SPEED));
+        return run(() -> io.setSpeed(EXTAKE_SPEED_PERCENT));
     }
 
     /**
@@ -43,7 +43,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that intakes an algae
      */
     public Command intakeAlgae() {
-        return run(() -> io.setSpeed(INTAKE_SPEED));
+        return run(() -> io.setSpeed(INTAKE_SPEED_PERCENT));
     }
 
     /**
@@ -52,7 +52,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that extakes an algae
      */
     public Command extakeAlgae() {
-        return run(() -> io.setSpeed(ALGAE_EJECT_SPEED));
+        return run(() -> io.setSpeed(ALGAE_EJECT_SPEED_PERCENT));
     }
 
     /**
@@ -61,7 +61,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
      * @return A {@link Command} that holds the algae
      */
     public Command holdAlgae() {
-        return run(() -> io.setSpeed(ALGAE_HOLD_SPEED));
+        return run(() -> io.setSpeed(ALGAE_HOLD_SPEED_PERCENT));
     }
 
     /**
@@ -81,7 +81,7 @@ public class Intake extends R0Subsystem<IntakeIO> {
     public Command idleBehavior() {
         return run(() -> {
             if (io.topLaserWithinThreshold().getAsBoolean() && !io.bottomLaserWithinThreshold().getAsBoolean()) {
-                io.setSpeed(ALGAE_HOLD_SPEED);
+                io.setSpeed(ALGAE_HOLD_SPEED_PERCENT);
             } else {
                 io.stop();
             }

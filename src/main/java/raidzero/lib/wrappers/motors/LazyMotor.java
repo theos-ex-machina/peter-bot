@@ -28,7 +28,7 @@ public interface LazyMotor<T> {
 
     /**
      * Sets the motor to the target speed
-    
+
      * @param speed the speed in percent of max speed [0, 1]
      */
     public void set(double speed);

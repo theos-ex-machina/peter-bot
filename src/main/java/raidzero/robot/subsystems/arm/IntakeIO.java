@@ -1,5 +1,7 @@
 package raidzero.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Millimeters;
 import static raidzero.robot.subsystems.arm.ArmConstants.Intake.*;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
@@ -56,18 +58,21 @@ public interface IntakeIO extends SubsystemIO {
 
         public Real() {
             roller = new LazyFXS(
-                LEADER_ID, MOTOR_ARRANGEMENT,
-                SENSOR_TO_MECHANISM_RATIO, INVERTED_VALUE,
-                STATOR_CURRENT_LIMIT, SUPPLY_CURRENT_LIMIT
-            ).withFollower(FOLLOWER_ID, FOLLOWER_INVERTED).build();
+                LEADER_ID, 
+                MOTOR_ARRANGEMENT,
+                SENSOR_TO_MECHANISM_RATIO, 
+                INVERTED_VALUE,
+                STATOR_CURRENT_LIMIT.in(Amps), 
+                SUPPLY_CURRENT_LIMIT.in(Amps)
+            ).build();
 
             bottomLaser = new LazyCan(BOTTOM_LASERCAN_ID).withRangingMode(RangingMode.SHORT)
                 .withRegionOfInterest(14, 8, 16, 16).withTimingBudget(TimingBudget.TIMING_BUDGET_20MS)
-                .withThreshold(BOTTOM_LASER_THRESHOLD_MM);
+                .withThreshold(BOTTOM_LASER_THRESHOLD_MM.in(Millimeters));
 
             topLaser = new LazyCan(TOP_LASERCAN_ID).withRangingMode(RangingMode.LONG)
                 .withRegionOfInterest(8, 14, 16, 4).withTimingBudget(TimingBudget.TIMING_BUDGET_20MS)
-                .withThreshold(TOP_LASER_THRESHOLD_MM);
+                .withThreshold(TOP_LASER_THRESHOLD_MM.in(Millimeters));
         }
 
         @Override

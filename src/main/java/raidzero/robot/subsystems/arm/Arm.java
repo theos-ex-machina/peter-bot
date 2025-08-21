@@ -50,7 +50,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Interpolates along a supplied path, ending on the last element in the list
-    
+
      * @param points the path to follow
      * @param wristAngle the final wrist angle
      * @return a {@link Command}
@@ -282,7 +282,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Returns the singleton instance of the {@link Arm} subystem
-    
+
      * @return the singleton Arm instance
      */
     public static Arm system() {

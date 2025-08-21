@@ -1,19 +1,14 @@
 package raidzero.robot.subsystems.arm;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static raidzero.robot.subsystems.arm.ArmConstants.DistalJoint;
 import static raidzero.robot.subsystems.arm.ArmConstants.ProximalJoint;
 import static raidzero.robot.subsystems.arm.ArmConstants.Wrist;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
 
@@ -42,7 +37,7 @@ public interface ArmIO extends SubsystemIO {
 
     /**
      * Gets the angle of the wrist
-
+    
      * @return the angle of the wrist
      */
     Angle getWristAngle();
@@ -57,40 +52,46 @@ public interface ArmIO extends SubsystemIO {
                 ProximalJoint.MOTOR_ARRANGEMENT,
                 ProximalJoint.SENSOR_TO_MECHANISM_RATIO,
                 ProximalJoint.INVERTED,
-                ProximalJoint.STATOR_CURRENT_LIMIT,
-                ProximalJoint.SUPPLY_CURRENT_LIMIT
+                ProximalJoint.STATOR_CURRENT_LIMIT.in(Amps),
+                ProximalJoint.SUPPLY_CURRENT_LIMIT.in(Amps)
             ).withSoftLimits(
-                true, ProximalJoint.FORWARD_SOFT_LIMIT,
-                true, ProximalJoint.REVERSE_SOFT_LIMIT
+                true, ProximalJoint.FORWARD_SOFT_LIMIT.in(Rotations),
+                true, ProximalJoint.REVERSE_SOFT_LIMIT.in(Rotations)
             ).withMotionMagicConfiguration(
                 ProximalJoint.P, ProximalJoint.I, ProximalJoint.D,
                 ProximalJoint.S, ProximalJoint.G, ProximalJoint.V, ProximalJoint.A,
                 ProximalJoint.GRAVITY_TYPE,
-                ProximalJoint.CRUISE_VELOCITY, ProximalJoint.ACCELERATION
-            ).build();
+                ProximalJoint.CRUISE_VELOCITY.in(RotationsPerSecond), ProximalJoint.ACCELERATION.in(RotationsPerSecondPerSecond)
+            ).withFollower(ProximalJoint.FOLLOWER_ID, ProximalJoint.FOLLOWER_INVERTED)
+                .build();
 
             distalJoint = new LazyFXS(
                 DistalJoint.MOTOR_ID,
                 DistalJoint.MOTOR_ARRANGEMENT,
                 DistalJoint.SENSOR_TO_MECHANISM_RATIO,
                 DistalJoint.INVERTED,
-                DistalJoint.STATOR_CURRENT_LIMIT,
-                DistalJoint.SUPPLY_CURRENT_LIMIT
+                DistalJoint.STATOR_CURRENT_LIMIT.in(Amps),
+                DistalJoint.SUPPLY_CURRENT_LIMIT.in(Amps)
             ).withMotionMagicConfiguration(
                 DistalJoint.P, DistalJoint.I, DistalJoint.D,
                 DistalJoint.S, DistalJoint.G, DistalJoint.V, DistalJoint.A,
                 DistalJoint.GRAVITY_TYPE,
-                DistalJoint.CRUISE_VELOCITY, DistalJoint.ACCELERATION
-            ).build();
+                DistalJoint.CRUISE_VELOCITY.in(RotationsPerSecond), DistalJoint.ACCELERATION.in(RotationsPerSecondPerSecond)
+            ).withFollower(DistalJoint.FOLLOWER_ID, DistalJoint.FOLLOWER_INVERTED)
+                .build();
 
             wrist = new LazyFXS(
-                Wrist.MOTOR_ID, Wrist.MOTOR_ARRANGEMENT, Wrist.SENSOR_TO_MECHANISM_RATIO, Wrist.INVERTED_VALUE, Wrist.STATOR_CURRENT_LIMIT,
-                Wrist.SUPPLY_CURRENT_LIMIT
+                Wrist.MOTOR_ID,
+                Wrist.MOTOR_ARRANGEMENT,
+                Wrist.SENSOR_TO_MECHANISM_RATIO,
+                Wrist.INVERTED_VALUE,
+                Wrist.STATOR_CURRENT_LIMIT.in(Amps),
+                Wrist.SUPPLY_CURRENT_LIMIT.in(Amps)
             ).withMotionMagicConfiguration(
                 Wrist.P, Wrist.I, Wrist.D,
                 Wrist.S, Wrist.G, Wrist.V, Wrist.A,
                 Wrist.GRAVITY_TYPE,
-                Wrist.CRUISE_VELOCITY, Wrist.ACCELERATION
+                Wrist.CRUISE_VELOCITY.in(RotationsPerSecond), Wrist.ACCELERATION.in(RotationsPerSecondPerSecond)
             ).build();
         }
 
