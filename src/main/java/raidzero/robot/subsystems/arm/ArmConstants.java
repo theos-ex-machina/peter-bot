@@ -22,29 +22,25 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.Time;
-
 import java.util.List;
 import raidzero.lib.wrappers.motors.LazyMotor.MotorTelemetry;
 
 public class ArmConstants {
     public static class ProximalJoint {
         public static final int MOTOR_ID = 10;
-        public static final int FOLLOWER_ID = 11;
+        public static final int FOLLOWER_ID = 13;
         public static final boolean FOLLOWER_INVERTED = false;
 
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.NEO_JST;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
-        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+        public static final double SENSOR_TO_MECHANISM_RATIO = 93.6;
+        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
 
-        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.45);
-        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.05);
-
-        public static final double P = 1.0;
+        public static final double P = 100.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
@@ -52,46 +48,64 @@ public class ArmConstants {
         public static final double G = 0.0;
         public static final double V = 0.0;
         public static final double A = 0.0;
+
+        public static final double EXPO_V = 10.0;
+        public static final double EXPO_A = 10.0;
+
         public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(0.45);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.05);
+
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0);
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(3.0);
 
         public static final Distance LENGTH = Meters.of(1.0);
         public static final Mass MASS = Kilograms.of(1.0);
+
+        public static final Angle STARTING_ANGLE = Rotations.of(0.25);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
 
     public static class DistalJoint {
         public static final int MOTOR_ID = 12;
-        public static final int FOLLOWER_ID = 13;
+        public static final int FOLLOWER_ID = 11;
         public static final boolean FOLLOWER_INVERTED = false;
 
         public static final MotorArrangementValue MOTOR_ARRANGEMENT = MotorArrangementValue.NEO_JST;
 
-        public static final double SENSOR_TO_MECHANISM_RATIO = 1.0;
+        public static final double SENSOR_TO_MECHANISM_RATIO = 150.0;
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
 
         public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
 
-        public static final double P = 1.0;
+        public static final double P = 100;
         public static final double I = 0.0;
         public static final double D = 0.0;
 
-        public static final double S = 0.0;
+        public static final double S = 0.9;
         public static final double G = 0.0;
-        public static final double V = 0.0;
-        public static final double A = 0.0;
+        public static final double V = 0.0;// 3.0;
+        public static final double A = 0.0;// 1.5;
+
+        public static final double EXPO_V = 10.0;
+        public static final double EXPO_A = 10.0;
+
         public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
-        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(1.0);
-        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(1.0);
+        public static final Angle FORWARD_SOFT_LIMIT = Rotations.of(1.25);
+        public static final Angle REVERSE_SOFT_LIMIT = Rotations.of(0.25);
+
+        public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0);
+        public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(3.0);
 
         public static final Distance LENGTH = Meters.of(1.0);
         public static final Mass MASS = Kilograms.of(1.0);
+
+        public static final Angle STARTING_ANGLE = Rotations.of(0.75);
 
         public static final MotorTelemetry TELEMETRY = new MotorTelemetry();
     }
@@ -107,7 +121,7 @@ public class ArmConstants {
         public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(50);
         public static final Time SUPPLY_CURRENT_LOWER_TIME = Seconds.of(0.0);
 
-        public static final double P = 1.0;
+        public static final double P = 80.0;
         public static final double I = 0.0;
         public static final double D = 0.0;
 

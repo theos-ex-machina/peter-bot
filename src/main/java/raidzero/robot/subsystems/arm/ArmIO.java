@@ -37,10 +37,15 @@ public interface ArmIO extends SubsystemIO {
 
     /**
      * Gets the angle of the wrist
-    
+
      * @return the angle of the wrist
      */
     Angle getWristAngle();
+
+    /**
+     * Resets the digital encoder to the starting agnle
+     */
+    void resetToStartingAngle();
 
     public class Real implements ArmIO {
         protected LazyFXS proximalJoint, distalJoint;
@@ -54,16 +59,16 @@ public interface ArmIO extends SubsystemIO {
                 ProximalJoint.INVERTED,
                 ProximalJoint.STATOR_CURRENT_LIMIT.in(Amps),
                 ProximalJoint.SUPPLY_CURRENT_LIMIT.in(Amps)
-            ).withSoftLimits(
-                true, ProximalJoint.FORWARD_SOFT_LIMIT.in(Rotations),
-                true, ProximalJoint.REVERSE_SOFT_LIMIT.in(Rotations)
+                // ).withSoftLimits(
+                // true, ProximalJoint.FORWARD_SOFT_LIMIT.in(Rotations),
+                // true, ProximalJoint.REVERSE_SOFT_LIMIT.in(Rotations)
             ).withMotionMagicConfiguration(
                 ProximalJoint.P, ProximalJoint.I, ProximalJoint.D,
                 ProximalJoint.S, ProximalJoint.G, ProximalJoint.V, ProximalJoint.A,
+                ProximalJoint.EXPO_V, ProximalJoint.EXPO_A,
                 ProximalJoint.GRAVITY_TYPE,
                 ProximalJoint.CRUISE_VELOCITY.in(RotationsPerSecond), ProximalJoint.ACCELERATION.in(RotationsPerSecondPerSecond)
-            ).withFollower(ProximalJoint.FOLLOWER_ID, ProximalJoint.FOLLOWER_INVERTED)
-                .build();
+            ).withFollower(ProximalJoint.FOLLOWER_ID, ProximalJoint.FOLLOWER_INVERTED).build();
 
             distalJoint = new LazyFXS(
                 DistalJoint.MOTOR_ID,
@@ -75,24 +80,26 @@ public interface ArmIO extends SubsystemIO {
             ).withMotionMagicConfiguration(
                 DistalJoint.P, DistalJoint.I, DistalJoint.D,
                 DistalJoint.S, DistalJoint.G, DistalJoint.V, DistalJoint.A,
+                DistalJoint.EXPO_V, DistalJoint.EXPO_A,
                 DistalJoint.GRAVITY_TYPE,
                 DistalJoint.CRUISE_VELOCITY.in(RotationsPerSecond), DistalJoint.ACCELERATION.in(RotationsPerSecondPerSecond)
-            ).withFollower(DistalJoint.FOLLOWER_ID, DistalJoint.FOLLOWER_INVERTED)
-                .build();
+                // ).withSoftLimits(true, DistalJoint.FORWARD_SOFT_LIMIT.in(Rotations), true, DistalJoint.REVERSE_SOFT_LIMIT.in(Rotations))
+            ).withFollower(DistalJoint.FOLLOWER_ID, DistalJoint.FOLLOWER_INVERTED).build();
 
-            wrist = new LazyFXS(
-                Wrist.MOTOR_ID,
-                Wrist.MOTOR_ARRANGEMENT,
-                Wrist.SENSOR_TO_MECHANISM_RATIO,
-                Wrist.INVERTED_VALUE,
-                Wrist.STATOR_CURRENT_LIMIT.in(Amps),
-                Wrist.SUPPLY_CURRENT_LIMIT.in(Amps)
-            ).withMotionMagicConfiguration(
-                Wrist.P, Wrist.I, Wrist.D,
-                Wrist.S, Wrist.G, Wrist.V, Wrist.A,
-                Wrist.GRAVITY_TYPE,
-                Wrist.CRUISE_VELOCITY.in(RotationsPerSecond), Wrist.ACCELERATION.in(RotationsPerSecondPerSecond)
-            ).build();
+            // wrist = new LazyFXS(
+            // Wrist.MOTOR_ID,
+            // Wrist.MOTOR_ARRANGEMENT,
+            // Wrist.SENSOR_TO_MECHANISM_RATIO,
+            // Wrist.INVERTED_VALUE,
+            // Wrist.STATOR_CURRENT_LIMIT.in(Amps),
+            // Wrist.SUPPLY_CURRENT_LIMIT.in(Amps)
+            // ).withMotionMagicConfiguration(
+            // Wrist.P, Wrist.I, Wrist.D,
+            // Wrist.S, Wrist.G, Wrist.V, Wrist.A,
+            // 0, 0,
+            // Wrist.GRAVITY_TYPE,
+            // Wrist.CRUISE_VELOCITY.in(RotationsPerSecond), Wrist.ACCELERATION.in(RotationsPerSecondPerSecond)
+            // ).build();
         }
 
         @Override
@@ -108,19 +115,29 @@ public interface ArmIO extends SubsystemIO {
 
         @Override
         public void moveWrist(Angle setpoint) {
-            wrist.moveTo(setpoint);
+            // wrist.moveTo(setpoint);
         }
 
         @Override
         public Angle getWristAngle() {
-            return wrist.getFeedbackPosition();
+            // return wrist.getFeedbackPosition();
+            return Rotations.of(0);
+        }
+
+        @Override
+        public void resetToStartingAngle() {
+            proximalJoint.getMotor().setPosition(ProximalJoint.STARTING_ANGLE);
+            distalJoint.getMotor().setPosition(DistalJoint.STARTING_ANGLE);
+
+            proximalJoint.setBrake();
+            distalJoint.setBrake();
         }
 
         @Override
         public void updateTelemetry() {
             proximalJoint.updateTelemetry(ProximalJoint.TELEMETRY);
             distalJoint.updateTelemetry(DistalJoint.TELEMETRY);
-            wrist.updateTelemetry(Wrist.TELEMETRY);
+            // wrist.updateTelemetry(Wrist.TELEMETRY);
         }
     }
 

@@ -2,11 +2,14 @@ package raidzero.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static raidzero.robot.subsystems.Superstructure.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -95,7 +98,7 @@ public class Bindings {
         );
 
         // // auto home when let go or obtain algae or coral
-        // arm.setDefaultCommand(arm.home());
+        arm.setDefaultCommand(arm.home());
         // intake.setDefaultCommand(intake.stop());
 
         // intake.hasCoral().onTrue(arm.home());
@@ -103,6 +106,12 @@ public class Bindings {
 
         // intake.hasCoral().onFalse(arm.home());
         // intake.hasAlgae().onFalse(arm.home());
+    }
+
+    public static void applyTempDriverOnlyBindings() {
+        driver.b().onTrue(arm.moveTo(new Pose2d(1.0, 1.0, Rotation2d.kZero), Rotations.of(0.0)));
+        driver.x().onTrue(arm.moveTo(new Pose2d(-1.0, 1.0, Rotation2d.kZero), Rotations.of(0.0)));
+        driver.a().onTrue(arm.home());
     }
 
     public static void applyManualBindings() {

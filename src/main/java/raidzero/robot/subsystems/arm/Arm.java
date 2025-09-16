@@ -48,6 +48,12 @@ public class Arm extends R0Subsystem<ArmIO> {
         });
     }
 
+    public Command moveTo(Angle proximalSetpoint, Angle distalSetpoint) {
+        return run(() -> {
+            io.moveJoints(proximalSetpoint, distalSetpoint);
+        });
+    }
+
     /**
      * Interpolates along a supplied path, ending on the last element in the list
 
@@ -81,6 +87,7 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @param setpoint the arm setpoint
      * @return the proximal and distal angle setpoints
      */
+
     private static Angle[] calculateJointAngles(Pose2d setpoint) {
         double x = setpoint.getMeasureX().in(Meters);
         double y = setpoint.getMeasureY().in(Meters);
@@ -90,18 +97,59 @@ public class Arm extends R0Subsystem<ArmIO> {
         double proximalLength = ProximalJoint.LENGTH.in(Meters);
         double distalLength = DistalJoint.LENGTH.in(Meters);
 
-        double cosTheta2 = Math.max(
+        double cosTheta2Relative = Math.max(
             -1, Math.min(
                 1, (r * r - proximalLength * proximalLength - distalLength * distalLength) /
                     (2 * proximalLength * distalLength)
             )
         );
-        double theta2 = Math.acos(cosTheta2);
 
-        double theta1 = Math.atan2(x, y) - Math.atan2(
-            distalLength * Math.sin(theta2),
-            proximalLength + distalLength * Math.cos(theta2)
+        // Two possible relative angles (elbow up and elbow down)
+        double theta2RelativeUp = Math.acos(cosTheta2Relative);
+        double theta2RelativeDown = -Math.acos(cosTheta2Relative);
+
+        // Calculate theta1 for both configurations
+        double theta1Up = Math.atan2(y, x) - Math.atan2(
+            distalLength * Math.sin(theta2RelativeUp),
+            proximalLength + distalLength * Math.cos(theta2RelativeUp)
         );
+
+        double theta1Down = Math.atan2(y, x) - Math.atan2(
+            distalLength * Math.sin(theta2RelativeDown),
+            proximalLength + distalLength * Math.cos(theta2RelativeDown)
+        );
+
+        // Normalize angles to [0, 2π)
+        theta1Up = ((theta1Up % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        theta1Down = ((theta1Down % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+        // Choose configuration that keeps theta1 in range (0, π)
+        double theta1, theta2Relative;
+        if (theta1Up > 0 && theta1Up < Math.PI) {
+            theta1 = theta1Up;
+            theta2Relative = theta2RelativeUp;
+        } else if (theta1Down > 0 && theta1Down < Math.PI) {
+            theta1 = theta1Down;
+            theta2Relative = theta2RelativeDown;
+        } else {
+            // If neither is in preferred range, choose the one closer to π/2
+            double distUp = Math.abs(theta1Up - Math.PI / 2);
+            double distDown = Math.abs(theta1Down - Math.PI / 2);
+            if (distUp < distDown) {
+                theta1 = theta1Up;
+                theta2Relative = theta2RelativeUp;
+            } else {
+                theta1 = theta1Down;
+                theta2Relative = theta2RelativeDown;
+            }
+        }
+
+        // Calculate theta2 (absolute angle of distal)
+        double theta2 = theta1 + theta2Relative;
+        theta2 = ((theta2 % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+        SmartDashboard.putNumber("Calculated theta1", Radians.of(theta1).in(Rotations));
+        SmartDashboard.putNumber("Calculated theta2", Radians.of(theta2).in(Rotations));
 
         return new Angle[] { Radians.of(theta1), Radians.of(theta2) };
     }
@@ -119,10 +167,14 @@ public class Arm extends R0Subsystem<ArmIO> {
         double proximalLength = ProximalJoint.LENGTH.in(Meters);
         double distalLength = DistalJoint.LENGTH.in(Meters);
 
-        double x = proximalLength * Math.sin(theta1) + distalLength * Math.sin(theta1 + theta2);
-        double y = proximalLength * Math.cos(theta1) + distalLength * Math.cos(theta1 + theta2);
+        double x = proximalLength * Math.cos(theta1) + distalLength * Math.cos(theta2);
+        double y = proximalLength * Math.sin(theta1) + distalLength * Math.sin(theta2);
 
         return new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
+    }
+
+    public void resetToStartingAngle() {
+        io.resetToStartingAngle();
     }
 
     /**
@@ -271,8 +323,8 @@ public class Arm extends R0Subsystem<ArmIO> {
         Angle[] angles = io.getJointAngles();
         Pose2d calculatedPose = calculatePose(angles);
 
-        SmartDashboard.putNumber("Arm Proximal Angle", angles[0].in(Degrees));
-        SmartDashboard.putNumber("Arm Distal Angle", angles[1].in(Degrees));
+        SmartDashboard.putNumber("Arm Proximal Angle", angles[0].in(Rotations));
+        SmartDashboard.putNumber("Arm Distal Angle", angles[1].in(Rotations));
 
         SmartDashboard.putNumber("Arm Calculated X", calculatedPose.getX());
         SmartDashboard.putNumber("Arm Calculated Y", calculatedPose.getY());

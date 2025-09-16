@@ -90,7 +90,7 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
     }
 
     @Override
-    public LazyTalon withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
+    public LazyTalon withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration) {
         motorConfiguration.Slot0.kP = p;
         motorConfiguration.Slot0.kI = i;
         motorConfiguration.Slot0.kD = d;
@@ -103,8 +103,8 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
         motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity;
         motorConfiguration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
 
-        motorConfiguration.MotionMagic.MotionMagicExpo_kA = a;
-        motorConfiguration.MotionMagic.MotionMagicExpo_kV = v;
+        motorConfiguration.MotionMagic.MotionMagicExpo_kV = expoV;
+        motorConfiguration.MotionMagic.MotionMagicExpo_kA = expoA;
 
         return this;
     }
@@ -138,6 +138,11 @@ public class LazyTalon implements LazyCTRE<TalonFX, FeedbackSensorSourceValue>, 
         motorConfiguration = (TalonFXConfiguration) configuration;
 
         return this;
+    }
+
+    @Override
+    public TalonFXConfiguration getConfiguration() {
+        return motorConfiguration;
     }
 
     @Override

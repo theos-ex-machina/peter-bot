@@ -60,7 +60,7 @@ public interface LazyCTRE<T, S> {
      * @param maxAcceleration the maximum acceleration of the mechanism in rotations/s^2
      * @return this motor instance for method chaining
      */
-    public LazyCTRE<T, S> withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration);
+    public LazyCTRE<T, S> withMotionMagicConfiguration(double p, double i, double d, double s, double g, double v, double a, double expoV, double expoA, GravityTypeValue gravityType, double cruiseVelocity, double maxAcceleration);
 
     /**
      * Configures the forward and reverse hardware limit switches
@@ -93,6 +93,13 @@ public interface LazyCTRE<T, S> {
      * @return this motor instance for method chaining
      */
     public LazyCTRE<T, S> withCustomConfiguration(ParentConfiguration configuration);
+
+    /**
+     * Gets the motor configuration
+     *
+     * @return the motor's configuration
+     */
+    public ParentConfiguration getConfiguration();
 
     /**
      * Applies the motor configuration. Use this method at the end of the configuration method chain

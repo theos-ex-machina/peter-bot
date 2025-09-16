@@ -58,11 +58,11 @@ public interface IntakeIO extends SubsystemIO {
 
         public Real() {
             roller = new LazyFXS(
-                LEADER_ID, 
+                LEADER_ID,
                 MOTOR_ARRANGEMENT,
-                SENSOR_TO_MECHANISM_RATIO, 
+                SENSOR_TO_MECHANISM_RATIO,
                 INVERTED_VALUE,
-                STATOR_CURRENT_LIMIT.in(Amps), 
+                STATOR_CURRENT_LIMIT.in(Amps),
                 SUPPLY_CURRENT_LIMIT.in(Amps)
             ).build();
 
