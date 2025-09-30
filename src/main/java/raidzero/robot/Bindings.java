@@ -8,12 +8,15 @@ import static raidzero.robot.subsystems.Superstructure.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.path.RotationTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import javax.naming.directory.AttributeModificationException;
 import raidzero.robot.subsystems.arm.Arm;
+import raidzero.robot.subsystems.arm.ArmConstants;
 import raidzero.robot.subsystems.arm.ArmConstants.Positions;
 import raidzero.robot.subsystems.arm.Intake;
 import raidzero.robot.subsystems.drivetrain.Swerve;
@@ -109,22 +112,23 @@ public class Bindings {
     }
 
     public static void applyTempDriverOnlyBindings() {
-        driver.b().onTrue(arm.moveTo(new Pose2d(1.0, 1.0, Rotation2d.kZero), Rotations.of(0.0)));
-        driver.x().onTrue(arm.moveTo(new Pose2d(-1.0, 1.0, Rotation2d.kZero), Rotations.of(0.0)));
+        driver.b().onTrue(arm.moveTo(ArmConstants.Positions.L1, ArmConstants.Positions.L1_WRIST_ANGLE, false));
+        driver.x().onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE, false));
+        driver.y().onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE, false));
         driver.a().onTrue(arm.home());
     }
 
     public static void applyManualBindings() {
-        L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE));
-        L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE));
-        L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE));
-        L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE));
+        L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE, false));
+        L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE, false));
+        L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE, false));
+        L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE, false));
 
-        STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE));
-        GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE));
+        STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE, false));
+        GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE, false));
 
-        PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE));
-        BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE));
+        PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE, false));
+        BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE, false));
 
         // CORAL_INTAKE.whileTrue(intake.intakeCoral());
         // CORAL_EXTAKE.whileTrue(intake.extakeCoral());
@@ -132,8 +136,8 @@ public class Bindings {
         // ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
         // ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
 
-        L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE));
-        L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE));
+        L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE, false));
+        L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE, false));
     }
 
     public static CommandXboxController driver = new CommandXboxController(0);

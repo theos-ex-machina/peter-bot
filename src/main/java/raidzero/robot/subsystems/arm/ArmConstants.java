@@ -61,6 +61,7 @@ public class ArmConstants {
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(3.0);
 
         public static final Distance LENGTH = Meters.of(1.0);
+        public static final Distance GROUND_TO_AXIS = Meters.of(0.25);
         public static final Mass MASS = Kilograms.of(1.0);
 
         public static final Angle STARTING_ANGLE = Rotations.of(0.25);
@@ -102,7 +103,7 @@ public class ArmConstants {
         public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(3.0);
         public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(3.0);
 
-        public static final Distance LENGTH = Meters.of(1.0);
+        public static final Distance LENGTH = Meters.of(0.85);
         public static final Mass MASS = Kilograms.of(1.0);
 
         public static final Angle STARTING_ANGLE = Rotations.of(0.75);
@@ -165,6 +166,7 @@ public class ArmConstants {
     }
 
     public static class Positions {
+        // ! poses are coompletely unverified
         public static final Pose2d L4 = new Pose2d(0.25, 1.84, Rotation2d.kZero);
         public static final Angle L4_WRIST_ANGLE = Rotations.of(0.875);
         public static final List<Pose2d> L4_INTERPOLATION_PATH = List.of(
@@ -174,15 +176,17 @@ public class ArmConstants {
             L4
         );
 
-        public static final Pose2d L3 = new Pose2d(0.25, 1.22, Rotation2d.kZero);
+        // * poses for l1-3 are input but not verified
+        public static final Pose2d L3 = new Pose2d(0.40, 1.21, Rotation2d.kZero);
         public static final Angle L3_WRIST_ANGLE = Rotations.of(0.875);
 
-        public static final Pose2d L2 = new Pose2d(0.25, 0.82, Rotation2d.kZero);
+        public static final Pose2d L2 = new Pose2d(0.40, 0.81, Rotation2d.kZero);
         public static final Angle L2_WRIST_ANGLE = Rotations.of(0.875);
 
-        public static final Pose2d L1 = new Pose2d(0.30, 0.47, Rotation2d.kZero);
+        public static final Pose2d L1 = new Pose2d(0.40, 0.46, Rotation2d.kZero);
         public static final Angle L1_WRIST_ANGLE = Rotations.of(0.875);
 
+        // ! poses are completly unverified.
         public static final Pose2d STATION = new Pose2d(0.35, 0.95, Rotation2d.kZero);
         public static final Angle STATION_WRIST_ANGLE = Rotations.of(0.125);
 

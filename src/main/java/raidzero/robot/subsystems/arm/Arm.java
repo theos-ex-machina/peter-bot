@@ -39,9 +39,9 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @param wristAngle the angle of the wrist relative to the bot
      * @return a {@link Command}
      */
-    public Command moveTo(Pose2d setpoint, Angle wristAngle) {
+    public Command moveTo(Pose2d setpoint, Angle wristAngle, boolean configuration1) {
         return run(() -> {
-            Angle[] angles = calculateJointAngles(setpoint);
+            Angle[] angles = calculateJointAngles(setpoint, configuration1);
 
             io.moveJoints(angles[0], angles[1]);
             io.moveWrist(wristAngle.minus(angles[0].plus(angles[1])));
@@ -61,9 +61,9 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @param wristAngle the final wrist angle
      * @return a {@link Command}
      */
-    public Command interpolateTo(List<Pose2d> points, Angle wristAngle) {
+    public Command interpolateTo(List<Pose2d> points, Angle wristAngle, boolean configuration1) {
         return new Interpolate<Pose2d>(points, 1.0, (pose) -> {
-            Angle[] jonitAngles = calculateJointAngles(pose);
+            Angle[] jonitAngles = calculateJointAngles(pose, configuration1);
             io.moveJoints(jonitAngles[0], jonitAngles[1]);
             io.moveWrist(wristAngle);
         }, Interpolate.pose2dInterpolator, system);
@@ -88,9 +88,9 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @return the proximal and distal angle setpoints
      */
 
-    private static Angle[] calculateJointAngles(Pose2d setpoint) {
+    private static Angle[] calculateJointAngles(Pose2d setpoint, boolean configuration1) {
         double x = setpoint.getMeasureX().in(Meters);
-        double y = setpoint.getMeasureY().in(Meters);
+        double y = setpoint.getMeasureY().in(Meters) - ProximalJoint.GROUND_TO_AXIS.in(Meters);
 
         double r = Math.sqrt(x * x + y * y);
 
@@ -123,25 +123,14 @@ public class Arm extends R0Subsystem<ArmIO> {
         theta1Up = ((theta1Up % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
         theta1Down = ((theta1Down % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
-        // Choose configuration that keeps theta1 in range (0, π)
+        // Choose configuration based on parameter
         double theta1, theta2Relative;
-        if (theta1Up > 0 && theta1Up < Math.PI) {
+        if (configuration1) {
             theta1 = theta1Up;
             theta2Relative = theta2RelativeUp;
-        } else if (theta1Down > 0 && theta1Down < Math.PI) {
+        } else {
             theta1 = theta1Down;
             theta2Relative = theta2RelativeDown;
-        } else {
-            // If neither is in preferred range, choose the one closer to π/2
-            double distUp = Math.abs(theta1Up - Math.PI / 2);
-            double distDown = Math.abs(theta1Down - Math.PI / 2);
-            if (distUp < distDown) {
-                theta1 = theta1Up;
-                theta2Relative = theta2RelativeUp;
-            } else {
-                theta1 = theta1Down;
-                theta2Relative = theta2RelativeDown;
-            }
         }
 
         // Calculate theta2 (absolute angle of distal)
@@ -168,7 +157,7 @@ public class Arm extends R0Subsystem<ArmIO> {
         double distalLength = DistalJoint.LENGTH.in(Meters);
 
         double x = proximalLength * Math.cos(theta1) + distalLength * Math.cos(theta2);
-        double y = proximalLength * Math.sin(theta1) + distalLength * Math.sin(theta2);
+        double y = proximalLength * Math.sin(theta1) + distalLength * Math.sin(theta2) + ProximalJoint.GROUND_TO_AXIS.in(Meters);
 
         return new Pose2d(Meters.of(x), Meters.of(y), Rotation2d.kZero);
     }
@@ -284,7 +273,8 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @return a {@link Trigger}
      */
     private Trigger atSetpoint(Pose2d setpoint, Angle wristAngle) {
-        Angle[] angles = calculateJointAngles(setpoint);
+        // TODO: handle configuration1 here
+        Angle[] angles = calculateJointAngles(setpoint, false);
 
         Angle[] currentAngles = io.getJointAngles();
         Angle currentWristAngle = io.getWristAngle();
