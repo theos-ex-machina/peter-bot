@@ -112,23 +112,23 @@ public class Bindings {
     }
 
     public static void applyTempDriverOnlyBindings() {
-        driver.b().onTrue(arm.moveTo(ArmConstants.Positions.L1, ArmConstants.Positions.L1_WRIST_ANGLE, false));
-        driver.x().onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE, false));
-        driver.y().onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE, false));
+        // driver.b().onTrue(arm.moveTo(ArmConstants.Positions.L1));
+        driver.x().onTrue(arm.moveTo(Positions.L2));
+        driver.y().onTrue(arm.moveTo(Positions.L3));
+        driver.b().onTrue(arm.moveTo(Positions.L4));
         driver.a().onTrue(arm.home());
     }
 
     public static void applyManualBindings() {
-        L1.onTrue(arm.moveTo(Positions.L1, Positions.L1_WRIST_ANGLE, false));
-        L2.onTrue(arm.moveTo(Positions.L2, Positions.L2_WRIST_ANGLE, false));
-        L3.onTrue(arm.moveTo(Positions.L3, Positions.L3_WRIST_ANGLE, false));
-        L4.onTrue(arm.interpolateTo(Positions.L4_INTERPOLATION_PATH, Positions.L4_WRIST_ANGLE, false));
+        L1.onTrue(arm.moveTo(Positions.L1));
+        L2.onTrue(arm.moveTo(Positions.L2));
+        L3.onTrue(arm.moveTo(Positions.L3));
 
-        STATION.whileTrue(arm.moveTo(Positions.STATION, Positions.STATION_WRIST_ANGLE, false));
-        GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE, Positions.GROUND_INTAKE_WRIST_ANGLE, false));
+        STATION.whileTrue(arm.moveTo(Positions.STATION));
+        GROUND_INTAKE.whileTrue(arm.moveTo(Positions.GROUND_INTAKE));
 
-        PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR, Positions.PROCESSOR_WRIST_ANGLE, false));
-        BARGE.whileTrue(arm.moveTo(Positions.BARGE, Positions.BARGE_WRIST_ANGLE, false));
+        PROCESSOR.whileTrue(arm.moveTo(Positions.PROCESSOR));
+        BARGE.whileTrue(arm.moveTo(Positions.BARGE));
 
         // CORAL_INTAKE.whileTrue(intake.intakeCoral());
         // CORAL_EXTAKE.whileTrue(intake.extakeCoral());
@@ -136,8 +136,8 @@ public class Bindings {
         // ALGAE_INTAKE.whileTrue(intake.intakeAlgae());
         // ALGAE_EXTAKE.whileTrue(intake.extakeAlgae());
 
-        L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE, Positions.L3_ALGAE_WRIST_ANGLE, false));
-        L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE, Positions.L2_ALGAE_WRIST_ANGLE, false));
+        L3_ALGAE.whileTrue(arm.moveTo(Positions.L3_ALGAE));
+        L2_ALGAE.whileTrue(arm.moveTo(Positions.L2_ALGAE));
     }
 
     public static CommandXboxController driver = new CommandXboxController(0);

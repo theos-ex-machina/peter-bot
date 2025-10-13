@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static raidzero.robot.subsystems.arm.ArmConstants.DistalJoint;
 import static raidzero.robot.subsystems.arm.ArmConstants.ProximalJoint;
-import static raidzero.robot.subsystems.arm.ArmConstants.Wrist;
 
 import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;

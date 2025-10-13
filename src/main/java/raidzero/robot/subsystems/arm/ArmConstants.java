@@ -166,45 +166,105 @@ public class ArmConstants {
     }
 
     public static class Positions {
-        // ! poses are coompletely unverified
-        public static final Pose2d L4 = new Pose2d(0.25, 1.84, Rotation2d.kZero);
-        public static final Angle L4_WRIST_ANGLE = Rotations.of(0.875);
-        public static final List<Pose2d> L4_INTERPOLATION_PATH = List.of(
-            new Pose2d(0.0, 0.0, Rotation2d.kZero),
-            new Pose2d(0.1, 1.22, Rotation2d.kZero),
-            new Pose2d(-0.1, 1.84, Rotation2d.kZero),
-            L4
+        private static final Distance HOME_X = Meters.of(0);
+        private static final Distance HOME_Y = Meters.of(0.4);
+        private static final Angle HOME_WRIST_ANGLE = Rotations.of(0);
+        private static final boolean HOME_THETA1_UP = false;
+
+        public static final ArmPose HOME = new ArmPose(HOME_X, HOME_Y, HOME_WRIST_ANGLE, HOME_THETA1_UP);
+
+        private static final Distance L4_X = Meters.of(0.40);
+        private static final Distance L4_Y = Meters.of(1.84);
+        private static final Angle L4_WRIST_ANGLE = Rotations.of(0.875);
+        private static final boolean L4_THETA1_UP = false;
+
+        public static final ArmPose L4 = new ArmPose(L4_X, L4_Y, L4_WRIST_ANGLE, L4_THETA1_UP);
+
+        private static final Distance L3_X = Meters.of(0.40);
+        private static final Distance L3_Y = Meters.of(1.21);
+        private static final Angle L3_WRIST_ANGLE = Rotations.of(0.875);
+        private static final boolean L3_THETA1_UP = false;
+
+        public static final ArmPose L3 = new ArmPose(L3_X, L3_Y, L3_WRIST_ANGLE, L3_THETA1_UP);
+
+        private static final Distance L2_X = Meters.of(0.40);
+        private static final Distance L2_Y = Meters.of(0.81);
+        private static final Angle L2_WRIST_ANGLE = Rotations.of(0.875);
+        private static final boolean L2_THETA1_UP = false;
+
+        public static final ArmPose L2 = new ArmPose(L2_X, L2_Y, L2_WRIST_ANGLE, L2_THETA1_UP);
+
+        private static final Distance L1_X = Meters.of(0.40);
+        private static final Distance L1_Y = Meters.of(0.46);
+        private static final Angle L1_WRIST_ANGLE = Rotations.of(0.875);
+        private static final boolean L1_THETA1_UP = false;
+
+        public static final ArmPose L1 = new ArmPose(L1_X, L1_Y, L1_WRIST_ANGLE, L1_THETA1_UP);
+
+        // ! poses are completely unverified.
+        private static final Distance STATION_X = Meters.of(0.35);
+        private static final Distance STATION_Y = Meters.of(0.95);
+        private static final Angle STATION_WRIST_ANGLE = Rotations.of(0.125);
+        private static final boolean STATION_THETA1_UP = false;
+
+        public static final ArmPose STATION = new ArmPose(STATION_X, STATION_Y, STATION_WRIST_ANGLE, STATION_THETA1_UP);
+
+        private static final Distance GROUND_INTAKE_X = Meters.of(0.8);
+        private static final Distance GROUND_INTAKE_Y = Meters.of(-0.1);
+        private static final Angle GROUND_INTAKE_WRIST_ANGLE = Rotations.of(0.9);
+        private static final boolean GROUND_INTAKE_THETA1_UP = false;
+
+        public static final ArmPose GROUND_INTAKE = new ArmPose(
+            GROUND_INTAKE_X, GROUND_INTAKE_Y, GROUND_INTAKE_WRIST_ANGLE, GROUND_INTAKE_THETA1_UP
         );
 
-        // * poses for l1-3 are input but not verified
-        public static final Pose2d L3 = new Pose2d(0.40, 1.21, Rotation2d.kZero);
-        public static final Angle L3_WRIST_ANGLE = Rotations.of(0.875);
+        private static final Distance L3_ALGAE_X = Meters.of(0.3);
+        private static final Distance L3_ALGAE_Y = Meters.of(1.32);
+        private static final Angle L3_ALGAE_WRIST_ANGLE = Rotations.of(0.875);
+        private static final boolean L3_ALGAE_THETA1_UP = false;
 
-        public static final Pose2d L2 = new Pose2d(0.40, 0.81, Rotation2d.kZero);
-        public static final Angle L2_WRIST_ANGLE = Rotations.of(0.875);
+        public static final ArmPose L3_ALGAE = new ArmPose(L3_ALGAE_X, L3_ALGAE_Y, L3_ALGAE_WRIST_ANGLE, L3_ALGAE_THETA1_UP);
 
-        public static final Pose2d L1 = new Pose2d(0.40, 0.46, Rotation2d.kZero);
-        public static final Angle L1_WRIST_ANGLE = Rotations.of(0.875);
+        private static final Distance L2_ALGAE_X = Meters.of(0.3);
+        private static final Distance L2_ALGAE_Y = Meters.of(0.92);
+        private static final Angle L2_ALGAE_WRIST_ANGLE = Rotations.of(0.75);
+        private static final boolean L2_ALGAE_THETA1_UP = false;
 
-        // ! poses are completly unverified.
-        public static final Pose2d STATION = new Pose2d(0.35, 0.95, Rotation2d.kZero);
-        public static final Angle STATION_WRIST_ANGLE = Rotations.of(0.125);
+        public static final ArmPose L2_ALGAE = new ArmPose(L2_ALGAE_X, L2_ALGAE_Y, L2_ALGAE_WRIST_ANGLE, L2_ALGAE_THETA1_UP);
 
-        public static final Pose2d GROUND_INTAKE = new Pose2d(0.8, -0.1, Rotation2d.kZero);
-        public static final Angle GROUND_INTAKE_WRIST_ANGLE = Rotations.of(0.9);
+        private static final Distance BARGE_X = Meters.of(0.0);
+        private static final Distance BARGE_Y = Meters.of(2.0);
+        private static final Angle BARGE_WRIST_ANGLE = Rotations.of(0.75);
+        private static final boolean BARGE_THETA1_UP = false;
 
-        public static final Pose2d L3_ALGAE = new Pose2d(0.3, 1.32, Rotation2d.kZero);
-        public static final Angle L3_ALGAE_WRIST_ANGLE = Rotations.of(0.7);
+        public static final ArmPose BARGE = new ArmPose(BARGE_X, BARGE_Y, BARGE_WRIST_ANGLE, BARGE_THETA1_UP);
 
-        public static final Pose2d L2_ALGAE = new Pose2d(0.3, 0.92, Rotation2d.kZero);
-        public static final Angle L2_ALGAE_WRIST_ANGLE = Rotations.of(0.75);
+        private static final Distance PROCESSOR_X = Meters.of(-0.35);
+        private static final Distance PROCESSOR_Y = Meters.of(0.0);
+        private static final Angle PROCESSOR_WRIST_ANGLE = Rotations.of(0.8);
+        private static final boolean PROCESSOR_THETA1_UP = false;
 
-        public static final Pose2d BARGE = new Pose2d(0.0, 2.0, Rotation2d.kZero);
-        public static final Angle BARGE_WRIST_ANGLE = Rotations.of(0.75);
+        public static final ArmPose PROCESSOR = new ArmPose(PROCESSOR_X, PROCESSOR_Y, PROCESSOR_WRIST_ANGLE, PROCESSOR_THETA1_UP);
 
-        public static final Pose2d PROCESSOR = new Pose2d(-0.35, 0.0, Rotation2d.kZero);
-        public static final Angle PROCESSOR_WRIST_ANGLE = Rotations.of(0.8);
+        public static final Angle POSITION_TOLERANCE_ANGLE = Degrees.of(1.0);
+        public static final Distance POSITION_TOLERANCE_DISTANCE = Meters.of(0.05);
+    }
 
-        public static final Angle POSITION_TOLERANCE = Degrees.of(0.2);
+    public static class ArmPose {
+        Pose2d pose;
+        Angle wristAngle;
+        boolean theta1Up;
+        List<ArmPose> interpolationPath = null;
+
+        public ArmPose(Distance x, Distance y, Angle wristAngle, boolean theta1Up) {
+            this.pose = new Pose2d(x.in(Meters), y.in(Meters), Rotation2d.kZero);
+            this.wristAngle = wristAngle;
+            this.theta1Up = theta1Up;
+        }
+
+        public ArmPose withInterPolationPath(Pose2d... poses) {
+            this.interpolationPath = List.of();
+            return this;
+        }
     }
 }
