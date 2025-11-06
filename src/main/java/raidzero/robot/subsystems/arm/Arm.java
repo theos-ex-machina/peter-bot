@@ -2,6 +2,7 @@ package raidzero.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,10 +42,7 @@ public class Arm extends R0Subsystem<ArmIO> {
      */
     public Command moveTo(ArmPose pose) {
         return run(() -> {
-            Angle[] angles = calculateJointAngles(pose);
-
-            io.moveJoints(angles[0], angles[1]);
-            io.moveWrist(pose.wristAngle.minus(angles[0].plus(angles[1])));
+            io.moveTo(pose);
         });
     }
 
@@ -55,7 +54,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Interpolates along a supplied path, ending on the last element in the list
-
+    
      * @param points the path to follow
      * @param wristAngle the final wrist angle
      * @return a {@link Command}
@@ -91,12 +90,11 @@ public class Arm extends R0Subsystem<ArmIO> {
      * @param setpoint the arm setpoint
      * @return the proximal and distal angle setpoints
      */
+    public static ArmPose calculateArmPose(Distance x, Distance y, boolean isTheta1Up, Angle absoluteWrist) {
+        var X = x.in(Meters);
+        var Y = y.in(Meters);
 
-    private static Angle[] calculateJointAngles(ArmPose pose) {
-        double x = pose.pose.getMeasureX().in(Meters);
-        double y = pose.pose.getMeasureY().in(Meters) - ProximalJoint.GROUND_TO_AXIS.in(Meters);
-
-        double r = Math.sqrt(x * x + y * y);
+        double r = Math.sqrt(X * X + Y * Y);
 
         double proximalLength = ProximalJoint.LENGTH.in(Meters);
         double distalLength = DistalJoint.LENGTH.in(Meters);
@@ -113,12 +111,12 @@ public class Arm extends R0Subsystem<ArmIO> {
         double theta2RelativeDown = -Math.acos(cosTheta2Relative);
 
         // Calculate theta1 for both configurations
-        double theta1Up = Math.atan2(y, x) - Math.atan2(
+        double theta1Up = Math.atan2(Y, X) - Math.atan2(
             distalLength * Math.sin(theta2RelativeUp),
             proximalLength + distalLength * Math.cos(theta2RelativeUp)
         );
 
-        double theta1Down = Math.atan2(y, x) - Math.atan2(
+        double theta1Down = Math.atan2(Y, X) - Math.atan2(
             distalLength * Math.sin(theta2RelativeDown),
             proximalLength + distalLength * Math.cos(theta2RelativeDown)
         );
@@ -129,7 +127,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
         // Choose configuration based on parameter
         double theta1, theta2Relative;
-        if (pose.theta1Up) {
+        if (isTheta1Up) {
             theta1 = theta1Up;
             theta2Relative = theta2RelativeUp;
         } else {
@@ -144,13 +142,17 @@ public class Arm extends R0Subsystem<ArmIO> {
         SmartDashboard.putNumber("Calculated theta1", Radians.of(theta1).in(Rotations));
         SmartDashboard.putNumber("Calculated theta2", Radians.of(theta2).in(Rotations));
 
-        return new Angle[] { Radians.of(theta1), Radians.of(theta2) };
+        Angle proximal = Radians.of(theta1);
+        Angle distal = Radians.of(theta2);
+        Angle relativeWrist = absoluteWrist.minus(proximal.plus(distal));
+
+        return new ArmPose(proximal, distal, relativeWrist, x, y, absoluteWrist);
     }
 
     /**
      * Calculates the cartesian pose given the angles of the joints
      *
-     * @param jointAngles the angles of the jointsj
+     * @param jointAngles the angles of the joints
      * @return the cartesian pose
      */
     private Pose2d calculatePose(Angle[] jointAngles) {
@@ -269,16 +271,21 @@ public class Arm extends R0Subsystem<ArmIO> {
         return atSetpoint(Positions.HOME);
     }
 
+    /**
+     * idk why but this works when I calculated the current xy and compare it to the target xy...
+     * @param pose the {@link} ArmPose object to check against
+     * @return the {@link Trigger} object
+     */
     private Trigger atSetpoint(ArmPose pose) {
         Angle[] currentAngles = io.getJointAngles();
         Pose2d currentPose = this.calculatePose(currentAngles);
 
         double positionTolerance = Positions.POSITION_TOLERANCE_DISTANCE.in(Meters);
 
-        // todo: add wrist to setpoint checker
         return new Trigger(
-            () -> (Math.abs(currentPose.getX() - pose.pose.getX())) < positionTolerance &&
-                Math.abs(currentPose.getY() - pose.pose.getY()) < positionTolerance
+            () -> Math.abs(currentPose.getX() - pose.pose.getX()) < positionTolerance &&
+                Math.abs(currentPose.getY() - pose.pose.getY()) < positionTolerance &&
+                Math.abs(io.getWristAngle().in(Rotations) - pose.relativeWrist.in(Rotations)) < positionTolerance
         );
     }
 
@@ -325,7 +332,7 @@ public class Arm extends R0Subsystem<ArmIO> {
 
     /**
      * Returns the singleton instance of the {@link Arm} subystem
-
+    
      * @return the singleton Arm instance
      */
     public static Arm system() {

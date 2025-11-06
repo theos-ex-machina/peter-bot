@@ -10,6 +10,8 @@ import static raidzero.robot.subsystems.arm.ArmConstants.ProximalJoint;
 import edu.wpi.first.units.measure.Angle;
 import raidzero.lib.SubsystemIO;
 import raidzero.lib.wrappers.motors.LazyFXS;
+import raidzero.robot.subsystems.arm.ArmConstants.ArmPose;
+import raidzero.robot.subsystems.arm.ArmConstants.Wrist;
 
 public interface ArmIO extends SubsystemIO {
     /**
@@ -19,6 +21,12 @@ public interface ArmIO extends SubsystemIO {
      * @param distalSeptoint the distal joint setpoint
      */
     void moveJoints(Angle proximalSetpoint, Angle distalSeptoint);
+
+    /**
+     * Moves to a given pose using the {@link ArmPose} struct
+     * @param pose the pose
+     */
+    void moveTo(ArmPose pose);
 
     /**
      * Gets the angles of the jonts
@@ -85,26 +93,35 @@ public interface ArmIO extends SubsystemIO {
                 // ).withSoftLimits(true, DistalJoint.FORWARD_SOFT_LIMIT.in(Rotations), true, DistalJoint.REVERSE_SOFT_LIMIT.in(Rotations))
             ).withFollower(DistalJoint.FOLLOWER_ID, DistalJoint.FOLLOWER_INVERTED).build();
 
-            // wrist = new LazyFXS(
-            // Wrist.MOTOR_ID,
-            // Wrist.MOTOR_ARRANGEMENT,
-            // Wrist.SENSOR_TO_MECHANISM_RATIO,
-            // Wrist.INVERTED_VALUE,
-            // Wrist.STATOR_CURRENT_LIMIT.in(Amps),
-            // Wrist.SUPPLY_CURRENT_LIMIT.in(Amps)
-            // ).withMotionMagicConfiguration(
-            // Wrist.P, Wrist.I, Wrist.D,
-            // Wrist.S, Wrist.G, Wrist.V, Wrist.A,
-            // 0, 0,
-            // Wrist.GRAVITY_TYPE,
-            // Wrist.CRUISE_VELOCITY.in(RotationsPerSecond), Wrist.ACCELERATION.in(RotationsPerSecondPerSecond)
-            // ).build();
+            wrist = new LazyFXS(
+                Wrist.MOTOR_ID,
+                Wrist.MOTOR_ARRANGEMENT,
+                Wrist.SENSOR_TO_MECHANISM_RATIO,
+                Wrist.INVERTED_VALUE,
+                Wrist.STATOR_CURRENT_LIMIT.in(Amps),
+                Wrist.SUPPLY_CURRENT_LIMIT.in(Amps)
+            ).withMotionMagicConfiguration(
+                Wrist.P, Wrist.I, Wrist.D,
+                Wrist.S, Wrist.G, Wrist.V, Wrist.A,
+                Wrist.EXPO_V, Wrist.EXPO_A,
+                Wrist.GRAVITY_TYPE,
+                Wrist.CRUISE_VELOCITY.in(RotationsPerSecond), Wrist.ACCELERATION.in(RotationsPerSecondPerSecond)
+            );
+            // disable continuous wrap to stop the wires from twisting up :(
+            wrist.getConfiguration().ClosedLoopGeneral.ContinuousWrap = false;
+            wrist.build();
         }
 
         @Override
         public void moveJoints(Angle proximalSetpoint, Angle distalSeptoint) {
             proximalJoint.moveTo(proximalSetpoint);
             distalJoint.moveTo(distalSeptoint);
+        }
+
+        public void moveTo(ArmPose pose) {
+            proximalJoint.moveTo(pose.proximal);
+            distalJoint.moveTo(pose.distal);
+            wrist.moveTo(pose.relativeWrist);
         }
 
         @Override
@@ -114,22 +131,23 @@ public interface ArmIO extends SubsystemIO {
 
         @Override
         public void moveWrist(Angle setpoint) {
-            // wrist.moveTo(setpoint);
+            wrist.moveTo(setpoint);
         }
 
         @Override
         public Angle getWristAngle() {
-            // return wrist.getFeedbackPosition();
-            return Rotations.of(0);
+            return wrist.getFeedbackPosition();
         }
 
         @Override
         public void resetToStartingAngle() {
             proximalJoint.getMotor().setPosition(ProximalJoint.STARTING_ANGLE);
             distalJoint.getMotor().setPosition(DistalJoint.STARTING_ANGLE);
+            wrist.getMotor().setPosition(Wrist.STARTING_ANGLE);
 
             proximalJoint.setBrake();
             distalJoint.setBrake();
+            wrist.setBrake();
         }
 
         @Override

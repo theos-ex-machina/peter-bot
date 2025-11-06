@@ -25,7 +25,7 @@ import raidzero.robot.subsystems.drivetrain.TunerConstants;
 public class Bindings {
     private static final Swerve swerve = Swerve.system();
     private static final Arm arm = Arm.system();
-    // private static final Intake intake = Intake.system();
+    private static final Intake intake = Intake.system();
 
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
@@ -100,9 +100,8 @@ public class Bindings {
             )
         );
 
-        // // auto home when let go or obtain algae or coral
-        arm.setDefaultCommand(arm.home());
-        // intake.setDefaultCommand(intake.stop());
+        // arm.setDefaultCommand(arm.home());
+        intake.setDefaultCommand(intake.stop());
 
         // intake.hasCoral().onTrue(arm.home());
         // intake.hasAlgae().onTrue(arm.home());
@@ -117,6 +116,9 @@ public class Bindings {
         driver.y().onTrue(arm.moveTo(Positions.L3));
         driver.b().onTrue(arm.moveTo(Positions.L4));
         driver.a().onTrue(arm.home());
+
+        driver.rightTrigger().whileTrue(intake.intakeCoral());
+        driver.leftTrigger().whileTrue(intake.extakeCoral());
     }
 
     public static void applyManualBindings() {
